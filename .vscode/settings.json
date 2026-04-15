@@ -1,0 +1,5 @@
+{
+    "task.saveBeforeRun": "never",
+    "pronto-spl.saveBeforeCompile": false,
+    "pronto-spl.tagDuringCompile": false
+}

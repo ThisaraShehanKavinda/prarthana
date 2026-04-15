@@ -1,0 +1,26 @@
+{
+  "lastUpdated": "2024-01-15",
+  "sourcesNote": "Illustrative summary figures for education. Replace with values from WHO / GLOBOCAN / national cancer registries for your reporting year.",
+  "globalBurden": {
+    "newCasesPerYearMillions": 20,
+    "deathsPerYearMillions": 10,
+    "shareOfAllDeathsPercent": 13,
+    "leadingCauseRank": 2
+  },
+  "ageGroups": {
+    "childhoodShareOfAllCancersPercent": 1,
+    "olderAdultMajorityNote": "Most cases occur in adults 50+; incidence rises steeply with age for many solid tumors.",
+    "illustrativeIncidenceByGroup": [
+      { "name": "Children (0–14)", "percent": 1 },
+      { "name": "Adolescents & young adults (15–39)", "percent": 4 },
+      { "name": "Adults (40–64)", "percent": 35 },
+      { "name": "Older adults (65+)", "percent": 60 }
+    ]
+  },
+  "treatmentMixIllustrative": [
+    { "name": "Surgery", "value": 32 },
+    { "name": "Systemic therapy", "value": 28 },
+    { "name": "Radiation", "value": 18 },
+    { "name": "Combined / other", "value": 22 }
+  ]
+}
