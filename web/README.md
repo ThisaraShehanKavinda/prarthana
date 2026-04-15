@@ -42,6 +42,7 @@ Create tabs **`articles`** and **`comments`** with header rows exactly as docume
    |----------|------------------|
    | `NEXT_PUBLIC_SITE_URL` | `https://your-domain.vercel.app` or your custom domain |
    | `AUTH_URL` | Same as public URL, **https**, no trailing slash (e.g. `https://your-domain.vercel.app`) |
+   | `NEXTAUTH_URL` | **Same value as `AUTH_URL` on Vercel** — the React client still reads this for URL parsing; omitting it can cause odd post-login behavior. |
    | `AUTH_SECRET` | Same as local; generate with `openssl rand -base64 32` |
    | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Same OAuth client as local (update redirect URIs below) |
    | `GOOGLE_SERVICE_ACCOUNT_JSON` | Entire service account JSON as **one line** (minified). In Vercel, paste as one secret value. |
