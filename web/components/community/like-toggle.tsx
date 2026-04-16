@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { signIn, useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heart } from "lucide-react";
@@ -19,9 +21,12 @@ export function LikeToggle({
   initialLiked: boolean;
   compact?: boolean;
 }) {
+  const reduceMotion = useReducedMotion();
   const { data: session, status } = useSession();
   const [count, setCount] = useState(initialCount);
   const [liked, setLiked] = useState(initialLiked);
+  /** Increments only on a successful “like” action so the heart animates without flashing on SSR. */
+  const [heartBurst, setHeartBurst] = useState(0);
   const [likers, setLikers] = useState<Liker[]>([]);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -50,8 +55,9 @@ export function LikeToggle({
   }, [articleId, initialCount, initialLiked]);
 
   useEffect(() => {
+    if (busy) return;
     void syncFromServer();
-  }, [syncFromServer]);
+  }, [busy, syncFromServer]);
 
   function cancelClose() {
     if (closeTimer.current) {
@@ -81,7 +87,17 @@ export function LikeToggle({
       void signIn("google");
       return;
     }
+    const prev = { count, liked };
     setBusy(true);
+
+    const nextLiked = !liked;
+    const nextCount = Math.max(0, nextLiked ? count + 1 : count - 1);
+    setLiked(nextLiked);
+    setCount(nextCount);
+    if (nextLiked && !prev.liked && !reduceMotion) {
+      setHeartBurst((n) => n + 1);
+    }
+
     try {
       const r = await fetch(`/api/articles/${articleId}/likes`, {
         method: "POST",
@@ -93,14 +109,18 @@ export function LikeToggle({
         likers?: Liker[];
       };
       if (!r.ok) {
-        console.warn(j.error ?? r.statusText);
+        setLiked(prev.liked);
+        setCount(prev.count);
+        toast.error(typeof j.error === "string" ? j.error : "Couldn’t update like");
         return;
       }
       if (typeof j.count === "number") setCount(j.count);
       if (typeof j.liked === "boolean") setLiked(j.liked);
       if (Array.isArray(j.likers)) setLikers(j.likers);
     } catch {
-      /* ignore */
+      setLiked(prev.liked);
+      setCount(prev.count);
+      toast.error("Couldn’t update like");
     } finally {
       setBusy(false);
     }
@@ -126,7 +146,25 @@ export function LikeToggle({
         aria-pressed={liked}
         aria-label={liked ? "Unlike" : "Like"}
       >
-        <Heart className={`h-5 w-5 shrink-0 ${liked ? "fill-current" : ""}`} />
+        <motion.span
+          className="inline-flex will-change-transform"
+          whileTap={reduceMotion ? undefined : { scale: 0.86 }}
+          transition={{ type: "spring", stiffness: 520, damping: 22 }}
+        >
+          <motion.span
+            key={heartBurst}
+            className="inline-flex"
+            initial={
+              heartBurst > 0 && !reduceMotion
+                ? { scale: 0.78, rotate: -11 }
+                : false
+            }
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 470, damping: 17 }}
+          >
+            <Heart className={`h-5 w-5 shrink-0 ${liked ? "fill-current" : ""}`} />
+          </motion.span>
+        </motion.span>
         {!compact && (
           <span className="hidden text-xs font-medium sm:inline">
             {liked ? "Liked" : "Like"}

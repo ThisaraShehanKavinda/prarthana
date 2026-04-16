@@ -10,6 +10,7 @@ import { articlesVisibleTo } from "@/lib/article-visibility";
 import { commentsVisibleToReader } from "@/lib/comment-filters";
 import { Button } from "@/components/ui/button";
 import { FeedPost } from "@/components/community/feed-post";
+import { ContinueLearningBanner } from "@/components/community/continue-learning-banner";
 import type { Comment } from "@/lib/types";
 
 export const metadata = {
@@ -64,6 +65,8 @@ export default async function CommunityPage() {
           </Button>
         </header>
 
+        <ContinueLearningBanner />
+
         {!configured && (
           <p className="mb-4 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-950 dark:text-amber-100">
             {process.env.NODE_ENV === "development" ? (
@@ -98,7 +101,7 @@ export default async function CommunityPage() {
             </div>
           )}
 
-          {visible.map((article) => {
+          {visible.map((article, index) => {
             const raw = byArticle.get(article.id) ?? [];
             const comments = commentsVisibleToReader(
               raw,
@@ -124,6 +127,7 @@ export default async function CommunityPage() {
                 likedByMe={likedByMe}
                 shareBaseUrl={shareBaseUrl}
                 currentUserEmail={session?.user?.email}
+                listIndex={index}
               />
             );
           })}

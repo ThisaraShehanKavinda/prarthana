@@ -1,3 +1,5 @@
+import { CommunityVisitProvider } from "@/components/community/community-visit-provider";
+
 export const revalidate = 60;
 
 export default function CommunityLayout({
@@ -5,5 +7,5 @@ export default function CommunityLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <CommunityVisitProvider>{children}</CommunityVisitProvider>;
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import type { Article, Comment } from "@/lib/types";
@@ -10,6 +12,8 @@ import { LikeToggle } from "@/components/community/like-toggle";
 import { CommentFormCompact } from "@/components/community/comment-form-compact";
 import { CommentBubbles } from "@/components/community/comment-bubbles";
 import { PostOverflowMenu } from "@/components/community/post-overflow-menu";
+import { useCommunityVisitBaseline } from "@/components/community/community-visit-provider";
+import { cn } from "@/lib/utils";
 
 function initials(name: string | null | undefined, email: string) {
   const n = (name || email || "?").trim();
@@ -36,6 +40,7 @@ export function FeedPost({
   likedByMe,
   shareBaseUrl,
   currentUserEmail,
+  listIndex,
 }: {
   article: Article;
   comments: Comment[];
@@ -43,14 +48,42 @@ export function FeedPost({
   likedByMe: boolean;
   shareBaseUrl: string;
   currentUserEmail?: string | null;
+  /** Staggered entrance on the main feed; omit on other surfaces. */
+  listIndex?: number;
 }) {
+  const reduce = useReducedMotion();
+  const visit = useCommunityVisitBaseline();
+  const isNewSinceLastVisit = Boolean(
+    visit?.ready &&
+      visit.baselineIso &&
+      new Date(article.createdAt).getTime() > new Date(visit.baselineIso).getTime()
+  );
+  const [heroLoaded, setHeroLoaded] = useState(!article.heroImageUrl);
   const url = `${shareBaseUrl.replace(/\/$/, "")}/community/${article.slug}`;
   const author = article.authorName || article.authorEmail;
   const topComments = comments.slice(-3);
+  const stagger =
+    listIndex !== undefined && !reduce
+      ? { delay: Math.min(listIndex, 14) * 0.04 }
+      : undefined;
 
   return (
-    <article
-      className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm"
+    <motion.article
+      initial={
+        listIndex !== undefined && !reduce
+          ? { opacity: 0, y: 18 }
+          : false
+      }
+      animate={{ opacity: 1, y: 0 }}
+      transition={
+        stagger
+          ? { duration: 0.4, ease: [0.22, 1, 0.36, 1], ...stagger }
+          : { duration: 0.2 }
+      }
+      className={cn(
+        "overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm",
+        "transition-[border-color,box-shadow] duration-300 hover:border-[var(--primary)]/20 hover:shadow-md hover:shadow-[var(--foreground)]/[0.04]"
+      )}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex gap-3 p-4 pb-3">
@@ -71,6 +104,11 @@ export function FeedPost({
                 {article.status === "pending" && (
                   <Badge variant="secondary" className="text-[10px]">
                     Pending
+                  </Badge>
+                )}
+                {isNewSinceLastVisit && (
+                  <Badge className="border-0 bg-[var(--primary)]/15 text-[10px] font-semibold text-[var(--primary)]">
+                    New
                   </Badge>
                 )}
               </div>
@@ -103,7 +141,14 @@ export function FeedPost({
             <img
               src={article.heroImageUrl}
               alt=""
-              className="h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setHeroLoaded(true)}
+              onError={() => setHeroLoaded(true)}
+              className={cn(
+                "h-full w-full object-cover transition-opacity duration-500 ease-out",
+                heroLoaded ? "opacity-100" : "opacity-0"
+              )}
             />
           </div>
         </Link>
@@ -162,6 +207,6 @@ export function FeedPost({
       <div className="border-t border-[var(--border)] p-2 sm:p-3">
         <CommentFormCompact articleId={article.id} />
       </div>
-    </article>
+    </motion.article>
   );
 }

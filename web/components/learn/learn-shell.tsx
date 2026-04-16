@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
+import { LearnLastPathTracker } from "@/components/learn/learn-last-path-tracker";
 
 export function LearnShell({
   title,
@@ -65,6 +66,7 @@ export function LearnShell({
           aria-hidden
         />
       </h1>
+      <LearnLastPathTracker label={title} />
       <div className="relative space-y-8 text-[var(--foreground)]/90">{children}</div>
     </div>
   );
