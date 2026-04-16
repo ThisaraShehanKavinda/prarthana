@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Sinhala, Noto_Serif_Sinhala } from "next/font/google";
 import "./globals.css";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
+import { AppToaster } from "@/components/providers/app-toaster";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -67,6 +68,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthSessionProvider>
+            <AppToaster />
             <div className="flex min-h-screen flex-col">
               <SiteHeader />
               <main className="flex-1 pb-[max(0px,env(safe-area-inset-bottom))]">{children}</main>

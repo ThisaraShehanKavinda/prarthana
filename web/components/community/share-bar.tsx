@@ -10,10 +10,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Link2, MessageCircle, Share2 } from "lucide-react";
+import { notify } from "@/lib/notify";
 
 export function ShareBar({ url, title }: { url: string; title: string }) {
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const text = `${title}\n${url}`;
 
   function wa() {
@@ -37,13 +37,10 @@ export function ShareBar({ url, title }: { url: string; title: string }) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-        setOpen(false);
-      }, 1200);
+      notify.success("Link copied", "You can paste it anywhere.");
+      setOpen(false);
     } catch {
-      setCopied(false);
+      notify.error("Could not copy", "Your browser may block clipboard access.");
     }
   }
 
@@ -98,7 +95,7 @@ export function ShareBar({ url, title }: { url: string; title: string }) {
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--muted)] text-[var(--foreground)]">
                 <Link2 className="h-5 w-5" />
               </span>
-              <span className="font-medium">{copied ? "Link copied!" : "Copy link"}</span>
+              <span className="font-medium">Copy link</span>
             </button>
           </div>
         </DialogContent>

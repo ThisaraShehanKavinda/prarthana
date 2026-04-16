@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { notify } from "@/lib/notify";
 import { SITE_BRAND_LOCKUP_PLAIN } from "@/lib/site-brand";
 
 const REPORT_EMAIL = "hello@example.com";
@@ -47,7 +48,6 @@ export function PostOverflowMenu({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const isOwner =
     Boolean(currentUserEmail) &&
@@ -56,10 +56,9 @@ export function PostOverflowMenu({
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      notify.success("Link copied", "You can paste it anywhere.");
     } catch {
-      setCopied(false);
+      notify.error("Could not copy", "Your browser may block clipboard access.");
     }
   }
 
@@ -80,11 +79,14 @@ export function PostOverflowMenu({
       const res = await fetch(`/api/articles/${articleId}`, { method: "DELETE" });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setDeleteError(data.error ?? "Could not delete");
+        const msg = data.error ?? "Could not delete";
+        setDeleteError(msg);
+        notify.error("Could not delete post", msg);
         setDeleting(false);
         return;
       }
       setDeleteOpen(false);
+      notify.success("Post deleted");
       if (deleteRedirectTo) {
         router.push(deleteRedirectTo);
       } else {
@@ -92,6 +94,7 @@ export function PostOverflowMenu({
       }
     } catch {
       setDeleteError("Network error");
+      notify.error("Network error", "Check your connection and try again.");
     } finally {
       setDeleting(false);
     }
@@ -99,15 +102,6 @@ export function PostOverflowMenu({
 
   return (
     <>
-      {copied ? (
-        <div
-          className="pointer-events-none fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm font-medium text-[var(--foreground)] shadow-lg"
-          role="status"
-        >
-          Link copied
-        </div>
-      ) : null}
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

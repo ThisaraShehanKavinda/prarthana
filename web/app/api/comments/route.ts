@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     session.user.email,
     session.user.name ?? "",
     parsed.data.body.trim(),
+    "public",
   ];
 
   try {

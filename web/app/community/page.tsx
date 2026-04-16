@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { auth } from "@/auth";
-import { fetchAllArticles, fetchAllComments, isSheetsConfigured } from "@/lib/sheets";
+import {
+  fetchAllArticles,
+  fetchAllComments,
+  fetchAllLikes,
+  isSheetsConfigured,
+} from "@/lib/sheets";
 import { articlesVisibleTo } from "@/lib/article-visibility";
+import { commentsVisibleToReader } from "@/lib/comment-filters";
 import { Button } from "@/components/ui/button";
 import { FeedPost } from "@/components/community/feed-post";
 import type { Comment } from "@/lib/types";
@@ -18,6 +24,7 @@ export default async function CommunityPage() {
   const articles = configured ? await fetchAllArticles() : [];
   const visible = articlesVisibleTo(articles, session);
   const allComments = configured ? await fetchAllComments() : [];
+  const allLikes = configured ? await fetchAllLikes() : [];
 
   const byArticle = new Map<string, Comment[]>();
   for (const c of allComments) {
@@ -91,15 +98,35 @@ export default async function CommunityPage() {
             </div>
           )}
 
-          {visible.map((article) => (
-            <FeedPost
-              key={article.id}
-              article={article}
-              comments={byArticle.get(article.id) ?? []}
-              shareBaseUrl={shareBaseUrl}
-              currentUserEmail={session?.user?.email}
-            />
-          ))}
+          {visible.map((article) => {
+            const raw = byArticle.get(article.id) ?? [];
+            const comments = commentsVisibleToReader(
+              raw,
+              article.authorEmail,
+              session?.user?.email
+            );
+            const likesForPost = allLikes.filter((l) => l.articleId === article.id);
+            const likeCount = likesForPost.length;
+            const likedByMe = Boolean(
+              session?.user?.email &&
+                likesForPost.some(
+                  (l) =>
+                    l.authorEmail.toLowerCase() ===
+                    session.user.email!.toLowerCase()
+                )
+            );
+            return (
+              <FeedPost
+                key={article.id}
+                article={article}
+                comments={comments}
+                likeCount={likeCount}
+                likedByMe={likedByMe}
+                shareBaseUrl={shareBaseUrl}
+                currentUserEmail={session?.user?.email}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

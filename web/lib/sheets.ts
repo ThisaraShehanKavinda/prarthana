@@ -1,8 +1,9 @@
 import { google } from "googleapis";
-import type { Article, Comment } from "@/lib/types";
+import type { Article, ArticleLike, Comment, CommentVisibility } from "@/lib/types";
 
 const ARTICLES_TAB = process.env.SHEETS_ARTICLES_TAB ?? "articles";
 const COMMENTS_TAB = process.env.SHEETS_COMMENTS_TAB ?? "comments";
+const LIKES_TAB = process.env.SHEETS_LIKES_TAB ?? "article_likes";
 
 function getSheetsClient() {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
@@ -62,9 +63,13 @@ function rowToArticle(row: string[]): Article | null {
   };
 }
 
+function parseCommentVisibility(raw: string | undefined): CommentVisibility {
+  return (raw ?? "").toLowerCase() === "hidden" ? "hidden" : "public";
+}
+
 function rowToComment(row: string[]): Comment | null {
   if (row.length < 6) return null;
-  const [id, createdAt, articleId, authorEmail, authorName, body] = row;
+  const [id, createdAt, articleId, authorEmail, authorName, body, visRaw] = row;
   if (!id || !articleId) return null;
   return {
     id,
@@ -73,6 +78,20 @@ function rowToComment(row: string[]): Comment | null {
     authorEmail: authorEmail ?? "",
     authorName: authorName ?? "",
     body: body ?? "",
+    visibility: parseCommentVisibility(visRaw),
+  };
+}
+
+function rowToLike(row: string[]): ArticleLike | null {
+  if (row.length < 5) return null;
+  const [id, createdAt, articleId, authorEmail, authorName] = row;
+  if (!id || !articleId) return null;
+  return {
+    id,
+    createdAt: createdAt ?? "",
+    articleId,
+    authorEmail: authorEmail ?? "",
+    authorName: authorName ?? "",
   };
 }
 
@@ -96,7 +115,7 @@ export async function fetchAllComments(): Promise<Comment[]> {
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:F2000`,
+    range: `${COMMENTS_TAB}!A2:G2000`,
   });
   const rows = res.data.values ?? [];
   return rows
@@ -148,6 +167,8 @@ export function articleSheetRowNumber(
 
 let articlesSheetIdCache: number | null | undefined;
 let commentsSheetIdCache: number | null | undefined;
+/** Set only when the likes tab exists, so adding the tab later is picked up without redeploy. */
+let likesSheetIdCache: number | undefined;
 
 async function sheetIdForTab(tabTitle: string): Promise<number | null> {
   const client = getSheetsClient();
@@ -171,6 +192,209 @@ export async function getCommentsSheetId(): Promise<number | null> {
   if (commentsSheetIdCache !== undefined) return commentsSheetIdCache;
   commentsSheetIdCache = await sheetIdForTab(COMMENTS_TAB);
   return commentsSheetIdCache;
+}
+
+export async function getLikesSheetId(): Promise<number | null> {
+  if (typeof likesSheetIdCache === "number") return likesSheetIdCache;
+  const id = await sheetIdForTab(LIKES_TAB);
+  if (id !== null) likesSheetIdCache = id;
+  return id;
+}
+
+export async function fetchAllLikes(): Promise<ArticleLike[]> {
+  const client = getSheetsClient();
+  if (!client) return [];
+  const { sheets, spreadsheetId } = client;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${LIKES_TAB}!A2:E2000`,
+    });
+    const rows = res.data.values ?? [];
+    return rows
+      .map((r) => rowToLike(r.map(String)))
+      .filter((l): l is ArticleLike => l !== null);
+  } catch (e) {
+    console.warn("[sheets] likes tab read failed (create tab article_likes?):", e);
+    return [];
+  }
+}
+
+export async function appendLikeRow(values: string[]): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const { sheets, spreadsheetId } = client;
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${LIKES_TAB}!A1`,
+    valueInputOption: "USER_ENTERED",
+    insertDataOption: "INSERT_ROWS",
+    requestBody: { values: [values] },
+  });
+  return true;
+}
+
+export async function findLikeSheetRowNumber(
+  articleId: string,
+  likerEmail: string
+): Promise<number | null> {
+  const client = getSheetsClient();
+  if (!client) return null;
+  const { sheets, spreadsheetId } = client;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${LIKES_TAB}!A2:E2000`,
+    });
+    const rows = res.data.values ?? [];
+    const em = likerEmail.toLowerCase();
+    for (let i = 0; i < rows.length; i++) {
+      const l = rowToLike(rows[i].map(String));
+      if (
+        l &&
+        l.articleId === articleId &&
+        l.authorEmail.toLowerCase() === em
+      ) {
+        return i + 2;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteLikeSheetRow(rowNumber: number): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const sheetId = await getLikesSheetId();
+  if (sheetId === null) return false;
+  const { sheets, spreadsheetId } = client;
+  const startIndex = rowNumber - 1;
+  const endIndex = rowNumber;
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          deleteDimension: {
+            range: {
+              sheetId,
+              dimension: "ROWS",
+              startIndex,
+              endIndex,
+            },
+          },
+        },
+      ],
+    },
+  });
+  return true;
+}
+
+export async function deleteLikesForArticle(articleId: string): Promise<void> {
+  const client = getSheetsClient();
+  if (!client) return;
+  const sheetId = await getLikesSheetId();
+  if (sheetId === null) return;
+  const { sheets, spreadsheetId } = client;
+  let res;
+  try {
+    res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${LIKES_TAB}!A2:E2000`,
+    });
+  } catch {
+    return;
+  }
+  const rows = res.data.values ?? [];
+  const rowsToDelete: number[] = [];
+  rows.forEach((r, i) => {
+    const l = rowToLike(r.map(String));
+    if (l?.articleId === articleId) {
+      rowsToDelete.push(i + 2);
+    }
+  });
+  rowsToDelete.sort((a, b) => b - a);
+  for (const rowNum of rowsToDelete) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: [
+          {
+            deleteDimension: {
+              range: {
+                sheetId,
+                dimension: "ROWS",
+                startIndex: rowNum - 1,
+                endIndex: rowNum,
+              },
+            },
+          },
+        ],
+      },
+    });
+  }
+}
+
+export async function findCommentSheetRowNumber(
+  commentId: string
+): Promise<number | null> {
+  const client = getSheetsClient();
+  if (!client) return null;
+  const { sheets, spreadsheetId } = client;
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${COMMENTS_TAB}!A2:G2000`,
+  });
+  const rows = res.data.values ?? [];
+  for (let i = 0; i < rows.length; i++) {
+    const c = rowToComment(rows[i].map(String));
+    if (c?.id === commentId) return i + 2;
+  }
+  return null;
+}
+
+export async function deleteCommentSheetRow(rowNumber: number): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const sheetId = await getCommentsSheetId();
+  if (sheetId === null) return false;
+  const { sheets, spreadsheetId } = client;
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          deleteDimension: {
+            range: {
+              sheetId,
+              dimension: "ROWS",
+              startIndex: rowNumber - 1,
+              endIndex: rowNumber,
+            },
+          },
+        },
+      ],
+    },
+  });
+  return true;
+}
+
+export async function updateCommentVisibilityAtRow(
+  rowNumber: number,
+  visibility: CommentVisibility
+): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const { sheets, spreadsheetId } = client;
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `${COMMENTS_TAB}!G${rowNumber}`,
+    valueInputOption: "USER_ENTERED",
+    requestBody: { values: [[visibility]] },
+  });
+  return true;
 }
 
 export async function updateArticleRowAt(
@@ -239,7 +463,7 @@ export async function deleteCommentsForArticle(articleId: string): Promise<void>
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:F2000`,
+    range: `${COMMENTS_TAB}!A2:G2000`,
   });
   const rows = res.data.values ?? [];
   const rowsToDelete: number[] = [];
@@ -275,6 +499,7 @@ export async function deleteArticleById(articleId: string): Promise<boolean> {
   const articles = await fetchAllArticles();
   const rowNumber = articleSheetRowNumber(articles, articleId);
   if (rowNumber === null) return false;
+  await deleteLikesForArticle(articleId);
   await deleteCommentsForArticle(articleId);
   return deleteArticleSheetRow(rowNumber);
 }

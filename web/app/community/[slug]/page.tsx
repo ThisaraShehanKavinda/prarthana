@@ -1,10 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { fetchAllArticles, fetchAllComments, isSheetsConfigured } from "@/lib/sheets";
+import {
+  fetchAllArticles,
+  fetchAllComments,
+  fetchAllLikes,
+  isSheetsConfigured,
+} from "@/lib/sheets";
+import { commentsVisibleToReader } from "@/lib/comment-filters";
 import { canViewArticle } from "@/lib/article-visibility";
 import { Badge } from "@/components/ui/badge";
 import { CommentForm } from "@/components/community/comment-form";
+import { CommentBubbles } from "@/components/community/comment-bubbles";
 import { ShareBar } from "@/components/community/share-bar";
 import { LikeToggle } from "@/components/community/like-toggle";
 import { ExpandableMarkdown } from "@/components/community/expandable-markdown";
@@ -52,8 +59,24 @@ export default async function ArticlePage({
   const article = articles.find((a) => a.slug === slug);
   if (!article || !canViewArticle(article, session)) notFound();
 
-  const comments = (await fetchAllComments()).filter(
-    (c) => c.articleId === article.id
+  const [allComments, allLikes] = await Promise.all([
+    fetchAllComments(),
+    fetchAllLikes(),
+  ]);
+  const rawForArticle = allComments.filter((c) => c.articleId === article.id);
+  const comments = commentsVisibleToReader(
+    rawForArticle,
+    article.authorEmail,
+    session?.user?.email
+  );
+  const likesForPost = allLikes.filter((l) => l.articleId === article.id);
+  const likeCount = likesForPost.length;
+  const likedByMe = Boolean(
+    session?.user?.email &&
+      likesForPost.some(
+        (l) =>
+          l.authorEmail.toLowerCase() === session.user.email!.toLowerCase()
+      )
   );
 
   const shareBaseUrl =
@@ -144,7 +167,11 @@ export default async function ArticlePage({
           <Separator />
 
           <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 px-2 py-2">
-            <LikeToggle articleId={article.id} />
+            <LikeToggle
+              articleId={article.id}
+              initialCount={likeCount}
+              initialLiked={likedByMe}
+            />
             <div className="shrink-0">
               <ShareBar url={shareUrl} title={article.title} />
             </div>
@@ -153,29 +180,23 @@ export default async function ArticlePage({
 
         <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6">
           <h2 className="text-lg font-semibold">Comments</h2>
+          {!session?.user ? (
+            <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+              Sign in to delete your own comments. If this is your post, sign in to hide or unhide comments (⋯ on each bubble).
+            </p>
+          ) : null}
           {comments.length === 0 && (
             <p className="mt-2 text-sm text-[var(--muted-foreground)]">
               No comments yet.
             </p>
           )}
-          <ul className="mt-4 space-y-3">
-            {comments.map((c) => (
-              <li
-                key={c.id}
-                className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 p-3"
-              >
-                <p className="text-sm font-semibold">
-                  {c.authorName || c.authorEmail}
-                  <span className="ml-2 text-xs font-normal text-[var(--muted-foreground)]">
-                    {new Date(c.createdAt).toLocaleString()}
-                  </span>
-                </p>
-                <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--foreground)]/90">
-                  {c.body}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-4">
+            <CommentBubbles
+              articleAuthorEmail={article.authorEmail}
+              comments={comments}
+              currentUserEmail={session?.user?.email}
+            />
+          </div>
           <div className="mt-6">
             <CommentForm articleId={article.id} />
           </div>

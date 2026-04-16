@@ -11,6 +11,7 @@ import { encodeImageFileToHeroDataUrl } from "@/lib/encode-hero-image-client";
 import { plainTextFromMarkdown } from "@/lib/markdown-preview";
 import { ImagePlus, X } from "lucide-react";
 import type { Article } from "@/lib/types";
+import { notify } from "@/lib/notify";
 
 type Mode = "create" | "edit";
 
@@ -64,7 +65,9 @@ export function NewArticleForm({
     } catch (err) {
       setHero("");
       setHeroPreview(null);
-      setError(err instanceof Error ? err.message : "Could not process image");
+      const msg = err instanceof Error ? err.message : "Could not process image";
+      setError(msg);
+      notify.warning("Image not added", msg);
     } finally {
       setEncodingImage(false);
     }
@@ -87,7 +90,9 @@ export function NewArticleForm({
     try {
       if (mode === "edit") {
         if (!articleId) {
-          setError("Missing post id");
+          const msg = "Missing post id";
+          setError(msg);
+          notify.error("Something went wrong", msg);
           setLoading(false);
           return;
         }
@@ -103,10 +108,13 @@ export function NewArticleForm({
         });
         const data = (await res.json()) as { slug?: string; error?: string };
         if (!res.ok) {
-          setError(data.error ?? "Failed to save");
+          const msg = data.error ?? "Failed to save";
+          setError(msg);
+          notify.error("Could not save post", msg);
           setLoading(false);
           return;
         }
+        notify.success("Post saved");
         const slug = data.slug ?? initial?.slug;
         if (slug) router.push(`/community/${slug}`);
         else router.push("/community");
@@ -123,15 +131,19 @@ export function NewArticleForm({
         });
         const data = (await res.json()) as { slug?: string; error?: string };
         if (!res.ok) {
-          setError(data.error ?? "Failed to publish");
+          const msg = data.error ?? "Failed to publish";
+          setError(msg);
+          notify.error("Could not publish post", msg);
           setLoading(false);
           return;
         }
+        notify.success("Post published");
         if (data.slug) router.push(`/community/${data.slug}`);
         else router.push("/community");
       }
     } catch {
       setError("Network error");
+      notify.error("Network error", "Check your connection and try again.");
     } finally {
       setLoading(false);
     }

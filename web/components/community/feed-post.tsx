@@ -8,6 +8,7 @@ import { ExpandableMarkdown } from "@/components/community/expandable-markdown";
 import { ShareBar } from "@/components/community/share-bar";
 import { LikeToggle } from "@/components/community/like-toggle";
 import { CommentFormCompact } from "@/components/community/comment-form-compact";
+import { CommentBubbles } from "@/components/community/comment-bubbles";
 import { PostOverflowMenu } from "@/components/community/post-overflow-menu";
 
 function initials(name: string | null | undefined, email: string) {
@@ -31,11 +32,15 @@ function timeAgo(iso: string) {
 export function FeedPost({
   article,
   comments,
+  likeCount,
+  likedByMe,
   shareBaseUrl,
   currentUserEmail,
 }: {
   article: Article;
   comments: Comment[];
+  likeCount: number;
+  likedByMe: boolean;
   shareBaseUrl: string;
   currentUserEmail?: string | null;
 }) {
@@ -131,22 +136,26 @@ export function FeedPost({
       <Separator />
 
       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 px-2 py-1.5">
-        <LikeToggle articleId={article.id} />
+        <LikeToggle
+          articleId={article.id}
+          initialCount={likeCount}
+          initialLiked={likedByMe}
+        />
         <div className="shrink-0">
           <ShareBar url={url} title={article.title} />
         </div>
       </div>
 
       {topComments.length > 0 && (
-        <div className="space-y-2 border-t border-[var(--border)] bg-[var(--muted)]/20 px-4 py-3">
-          {topComments.map((c) => (
-            <div key={c.id} className="text-sm">
-              <span className="font-semibold text-[var(--foreground)]">
-                {c.authorName || c.authorEmail}
-              </span>
-              <span className="text-[var(--muted-foreground)]"> {c.body}</span>
-            </div>
-          ))}
+        <div className="border-t border-[var(--border)] bg-[var(--muted)]/25 px-3 py-3 sm:px-4">
+          <p className="mb-2 text-xs font-medium text-[var(--muted-foreground)]">
+            Latest comments
+          </p>
+          <CommentBubbles
+            articleAuthorEmail={article.authorEmail}
+            comments={topComments}
+            currentUserEmail={currentUserEmail}
+          />
         </div>
       )}
 

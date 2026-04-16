@@ -161,3 +161,51 @@ body {
     radial-gradient(ellipse 55% 40% at 0% 0%, rgba(45, 40, 56, 0.6), transparent),
     linear-gradient(180deg, #1a1d26 0%, #22262f 50%, #1a1d26 100%);
 }
+
+/* Sonner: pin toast stack to viewport center (overrides corner positioning). */
+ol[data-sonner-toaster].prarthana-sonner-center {
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(100vw - 1.5rem, 26rem) !important;
+  max-width: calc(100vw - 1.5rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+ol[data-sonner-toaster].prarthana-sonner-center [data-sonner-toast] {
+  width: 100% !important;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  ol[data-sonner-toaster].prarthana-sonner-center[data-lifted="true"] {
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
+/* Hidden comments: fade in (light grey bubbles — see comment-bubbles.tsx) */
+@keyframes prarthana-comment-hidden-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: saturate(0.55) brightness(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: saturate(1) brightness(1);
+  }
+}
+
+.prarthana-comment-hidden-in {
+  animation: prarthana-comment-hidden-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prarthana-comment-hidden-in {
+    animation: none;
+  }
+}

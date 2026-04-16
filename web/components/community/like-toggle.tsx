@@ -1,76 +1,183 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heart } from "lucide-react";
 
-const STORAGE_KEY = "prarthana_liked_posts_v1";
-
-function readLiked(): Set<string> {
-  if (typeof window === "undefined") return new Set();
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw) as string[];
-    return new Set(Array.isArray(arr) ? arr : []);
-  } catch {
-    return new Set();
-  }
-}
-
-function writeLiked(set: Set<string>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
-}
+type Liker = { authorEmail: string; authorName: string; createdAt: string };
 
 export function LikeToggle({
   articleId,
+  initialCount,
+  initialLiked,
   compact,
 }: {
   articleId: string;
+  initialCount: number;
+  initialLiked: boolean;
   compact?: boolean;
 }) {
-  const [liked, setLiked] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const { data: session, status } = useSession();
+  const [count, setCount] = useState(initialCount);
+  const [liked, setLiked] = useState(initialLiked);
+  const [likers, setLikers] = useState<Liker[]>([]);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-    setLiked(readLiked().has(articleId));
+  const syncFromServer = useCallback(async () => {
+    try {
+      const r = await fetch(`/api/articles/${articleId}/likes`);
+      if (!r.ok) return;
+      const j = (await r.json()) as {
+        count?: number;
+        likers?: Liker[];
+        likedByMe?: boolean;
+      };
+      if (typeof j.count === "number") setCount(j.count);
+      if (Array.isArray(j.likers)) setLikers(j.likers);
+      if (typeof j.likedByMe === "boolean") setLiked(j.likedByMe);
+    } catch {
+      /* ignore */
+    }
   }, [articleId]);
 
-  function toggle(e: React.MouseEvent) {
+  useEffect(() => {
+    setCount(initialCount);
+    setLiked(initialLiked);
+  }, [articleId, initialCount, initialLiked]);
+
+  useEffect(() => {
+    void syncFromServer();
+  }, [syncFromServer]);
+
+  function cancelClose() {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  }
+
+  function openLikersPopover() {
+    cancelClose();
+    if (count > 0) {
+      void syncFromServer();
+      setPopoverOpen(true);
+    }
+  }
+
+  function scheduleClosePopover() {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setPopoverOpen(false), 180);
+  }
+
+  async function toggleLike(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    const next = new Set(readLiked());
-    if (next.has(articleId)) next.delete(articleId);
-    else next.add(articleId);
-    writeLiked(next);
-    setLiked(next.has(articleId));
+    if (status === "loading" || busy) return;
+    if (!session?.user) {
+      void signIn("google");
+      return;
+    }
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/articles/${articleId}/likes`, {
+        method: "POST",
+      });
+      const j = (await r.json()) as {
+        error?: string;
+        liked?: boolean;
+        count?: number;
+        likers?: Liker[];
+      };
+      if (!r.ok) {
+        console.warn(j.error ?? r.statusText);
+        return;
+      }
+      if (typeof j.count === "number") setCount(j.count);
+      if (typeof j.liked === "boolean") setLiked(j.liked);
+      if (Array.isArray(j.likers)) setLikers(j.likers);
+    } catch {
+      /* ignore */
+    } finally {
+      setBusy(false);
+    }
   }
 
-  if (!mounted) {
-    return (
-      <Button type="button" variant="ghost" size="sm" className="h-9" disabled>
-        <Heart className="h-5 w-5" />
-      </Button>
-    );
-  }
+  const showList = count > 0;
+  const listLabel =
+    likers.length === 0
+      ? "Loading…"
+      : likers.length === 1
+        ? "1 person likes this"
+        : `${likers.length} people like this`;
 
   return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="sm"
-      className={`h-9 gap-2 ${liked ? "text-rose-500 hover:text-rose-600" : "text-[var(--muted-foreground)]"}`}
-      onClick={toggle}
-      aria-pressed={liked}
-      aria-label={liked ? "Unlike" : "Like"}
-    >
-      <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
-      {!compact && (
-        <span className="hidden text-xs font-medium sm:inline">
-          {liked ? "Liked" : "Like"}
+    <div className="flex min-w-0 items-center gap-0.5 sm:gap-1">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={`h-9 shrink-0 gap-1.5 sm:gap-2 ${liked ? "text-rose-500 hover:text-rose-600" : "text-[var(--muted-foreground)]"}`}
+        onClick={toggleLike}
+        disabled={busy || status === "loading"}
+        aria-pressed={liked}
+        aria-label={liked ? "Unlike" : "Like"}
+      >
+        <Heart className={`h-5 w-5 shrink-0 ${liked ? "fill-current" : ""}`} />
+        {!compact && (
+          <span className="hidden text-xs font-medium sm:inline">
+            {liked ? "Liked" : "Like"}
+          </span>
+        )}
+      </Button>
+
+      {showList ? (
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={`min-w-0 truncate rounded-md px-1.5 py-1 text-left text-xs font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)]/60 hover:text-[var(--foreground)] ${compact ? "max-w-[5.5rem]" : "max-w-[10rem] sm:max-w-[14rem]"}`}
+              onMouseEnter={openLikersPopover}
+              onMouseLeave={scheduleClosePopover}
+              onFocus={openLikersPopover}
+              onBlur={scheduleClosePopover}
+              aria-label={listLabel}
+            >
+              <span className="tabular-nums">{count}</span>
+              {!compact && <span className="hidden sm:inline"> likes</span>}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            side="top"
+            align="start"
+            className="max-h-56 overflow-y-auto p-2"
+            onMouseEnter={openLikersPopover}
+            onMouseLeave={scheduleClosePopover}
+          >
+            <p className="mb-1.5 border-b border-[var(--border)] pb-1 text-xs font-semibold text-[var(--foreground)]">
+              {listLabel}
+            </p>
+            <ul className="space-y-1 text-sm">
+              {likers.map((p) => (
+                <li key={p.authorEmail} className="truncate text-[var(--foreground)]">
+                  {p.authorName}
+                </li>
+              ))}
+            </ul>
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <span
+          className={`px-1.5 text-xs tabular-nums text-[var(--muted-foreground)] ${compact ? "" : "sm:pr-2"}`}
+          aria-hidden
+        >
+          0
+          {!compact && <span className="hidden sm:inline"> likes</span>}
         </span>
       )}
-    </Button>
+    </div>
   );
 }

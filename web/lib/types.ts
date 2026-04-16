@@ -14,6 +14,8 @@ export interface Article {
   heroImageUrl: string;
 }
 
+export type CommentVisibility = "public" | "hidden";
+
 export interface Comment {
   id: string;
   createdAt: string;
@@ -21,4 +23,13 @@ export interface Comment {
   authorEmail: string;
   authorName: string;
   body: string;
+  visibility: CommentVisibility;
+}
+
+export interface ArticleLike {
+  id: string;
+  createdAt: string;
+  articleId: string;
+  authorEmail: string;
+  authorName: string;
 }

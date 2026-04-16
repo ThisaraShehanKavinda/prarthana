@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { notify } from "@/lib/notify";
 
 export function CommentForm({ articleId }: { articleId: string }) {
   const { data: session, status } = useSession();
@@ -35,14 +36,18 @@ export function CommentForm({ articleId }: { articleId: string }) {
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setError(data.error ?? "Failed to post");
+        const msg = data.error ?? "Failed to post";
+        setError(msg);
+        notify.error("Could not post comment", msg);
         setLoading(false);
         return;
       }
       setBody("");
+      notify.success("Comment posted");
       window.location.reload();
     } catch {
       setError("Network error");
+      notify.error("Network error", "Check your connection and try again.");
     } finally {
       setLoading(false);
     }
