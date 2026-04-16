@@ -9,9 +9,11 @@ import {
 } from "@/lib/sheets";
 import { commentsVisibleToReader } from "@/lib/comment-filters";
 import { canViewArticle } from "@/lib/article-visibility";
+import { isArticlePubliclyVisible } from "@/lib/article-feed";
+import { isEditor } from "@/lib/editors";
+import { topicLabelForId } from "@/lib/community-topic-tags";
 import { Badge } from "@/components/ui/badge";
-import { CommentForm } from "@/components/community/comment-form";
-import { CommentBubbles } from "@/components/community/comment-bubbles";
+import { ArticleCommentsSection } from "@/components/community/article-comments-section";
 import { ShareBar } from "@/components/community/share-bar";
 import { LikeToggle } from "@/components/community/like-toggle";
 import { ExpandableMarkdown } from "@/components/community/expandable-markdown";
@@ -30,7 +32,7 @@ export async function generateMetadata({
   const articles = await fetchAllArticles();
   const article = articles.find((a) => a.slug === slug);
   if (!article) return { title: "Article" };
-  if (article.status !== "published") {
+  if (!(article.status === "published" || isArticlePubliclyVisible(article))) {
     return {
       title: "Community article",
       robots: { index: false, follow: false },
@@ -83,6 +85,20 @@ export default async function ArticlePage({
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
     "http://localhost:3000";
   const shareUrl = `${shareBaseUrl}/community/${article.slug}`;
+  const viewerEmail = session?.user?.email;
+  const canModComments = Boolean(
+    viewerEmail &&
+      (isEditor(viewerEmail) ||
+        viewerEmail.toLowerCase() === article.authorEmail.toLowerCase())
+  );
+  const editorUser = isEditor(viewerEmail);
+  const live = isArticlePubliclyVisible(article) || article.status === "published";
+  const statusLabel =
+    article.status === "scheduled" && !live
+      ? "Scheduled"
+      : article.status === "draft"
+        ? "Draft"
+        : article.status;
 
   return (
     <article className="min-h-screen bg-[var(--muted)]/30 pb-16 pt-4 sm:pt-6">
@@ -114,11 +130,24 @@ export default async function ArticlePage({
                       {article.authorName || article.authorEmail}
                     </span>
                     <Badge
-                      variant={article.status === "published" ? "default" : "secondary"}
+                      variant={live ? "default" : "secondary"}
                       className="text-[10px]"
                     >
-                      {article.status}
+                      {statusLabel}
                     </Badge>
+                    {article.tags?.length ? (
+                      <span className="flex flex-wrap gap-1">
+                        {article.tags.map((tid) => (
+                          <Badge
+                            key={tid}
+                            variant="outline"
+                            className="text-[10px] font-normal"
+                          >
+                            {topicLabelForId(tid)}
+                          </Badge>
+                        ))}
+                      </span>
+                    ) : null}
                   </div>
                   <p className="text-xs text-[var(--muted-foreground)]">
                     {new Date(article.createdAt).toLocaleString()}
@@ -190,16 +219,14 @@ export default async function ArticlePage({
               No comments yet.
             </p>
           )}
-          <div className="mt-4">
-            <CommentBubbles
-              articleAuthorEmail={article.authorEmail}
-              comments={comments}
-              currentUserEmail={session?.user?.email}
-            />
-          </div>
-          <div className="mt-6">
-            <CommentForm articleId={article.id} />
-          </div>
+          <ArticleCommentsSection
+            articleId={article.id}
+            articleAuthorEmail={article.authorEmail}
+            comments={comments}
+            currentUserEmail={session?.user?.email}
+            canModerateComments={canModComments}
+            isEditorUser={editorUser}
+          />
         </section>
       </div>
     </article>

@@ -7,6 +7,8 @@ import {
   isSheetsConfigured,
   updateCommentVisibilityAtRow,
 } from "@/lib/sheets";
+import { appendNotifications } from "@/lib/comment-social";
+import { isEditor } from "@/lib/editors";
 import type { CommentVisibility } from "@/lib/types";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -69,9 +71,10 @@ export async function PATCH(
     return NextResponse.json({ error: "Post not found." }, { status: 404 });
   }
 
-  if (!emEq(session.user.email, article.authorEmail)) {
+  const isPostAuthor = emEq(session.user.email, article.authorEmail);
+  if (!isPostAuthor && !isEditor(session.user.email)) {
     return NextResponse.json(
-      { error: "Only the post author can hide or unhide comments." },
+      { error: "Only the post author or an editor can hide or unhide comments." },
       { status: 403 }
     );
   }
@@ -82,6 +85,8 @@ export async function PATCH(
   }
 
   const visibility = parsed.data.visibility as CommentVisibility;
+  const wasHidden = comment.visibility === "hidden";
+  const nowHidden = visibility === "hidden";
   try {
     const ok = await updateCommentVisibilityAtRow(row, visibility);
     if (!ok) {
@@ -96,6 +101,25 @@ export async function PATCH(
       { error: "Could not update comment." },
       { status: 502 }
     );
+  }
+
+  if (nowHidden && !wasHidden) {
+    const base =
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+      "http://localhost:3000";
+    if (
+      comment.authorEmail.toLowerCase() !== session.user.email!.toLowerCase()
+    ) {
+      await appendNotifications([
+        {
+          recipientEmail: comment.authorEmail,
+          type: "mod_comment_hidden",
+          title: "Your comment was hidden",
+          body: `A moderator hid your comment on “${article.title.slice(0, 72)}${article.title.length > 72 ? "…" : ""}”.`,
+          linkHref: `${base}/community/${article.slug}`,
+        },
+      ]);
+    }
   }
 
   return NextResponse.json({ ok: true, visibility });
@@ -136,9 +160,12 @@ export async function DELETE(
 
   const isCommentAuthor = emEq(session.user.email, comment.authorEmail);
   const isPostAuthor = emEq(session.user.email, article.authorEmail);
-  if (!isCommentAuthor && !isPostAuthor) {
+  if (!isCommentAuthor && !isPostAuthor && !isEditor(session.user.email)) {
     return NextResponse.json(
-      { error: "You can only delete your own comments, or any comment on your post." },
+      {
+        error:
+          "You can only delete your own comments, comments on your post, or use an editor account.",
+      },
       { status: 403 }
     );
   }

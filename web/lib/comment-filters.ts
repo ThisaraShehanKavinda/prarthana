@@ -1,4 +1,5 @@
 import type { Comment } from "@/lib/types";
+import { isEditor } from "@/lib/editors";
 
 /** Hides `visibility: "hidden"` from everyone except the post author and the comment author. */
 export function commentsVisibleToReader(
@@ -6,6 +7,7 @@ export function commentsVisibleToReader(
   articleAuthorEmail: string,
   readerEmail?: string | null
 ): Comment[] {
+  if (isEditor(readerEmail)) return comments;
   const owner = readerEmail?.toLowerCase() ?? "";
   const postOwner = owner && owner === articleAuthorEmail.toLowerCase();
   return comments.filter((c) => {

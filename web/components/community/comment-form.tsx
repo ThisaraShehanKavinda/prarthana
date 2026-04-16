@@ -7,7 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { notify } from "@/lib/notify";
 
-export function CommentForm({ articleId }: { articleId: string }) {
+export function CommentForm({
+  articleId,
+  parentCommentId,
+  onPosted,
+}: {
+  articleId: string;
+  parentCommentId?: string | null;
+  onPosted?: () => void;
+}) {
   const { data: session, status } = useSession();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +40,11 @@ export function CommentForm({ articleId }: { articleId: string }) {
       const res = await fetch("/api/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId, body }),
+        body: JSON.stringify({
+          articleId,
+          body,
+          parentCommentId: parentCommentId?.trim() || undefined,
+        }),
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
@@ -44,7 +56,8 @@ export function CommentForm({ articleId }: { articleId: string }) {
       }
       setBody("");
       notify.success("Comment posted");
-      window.location.reload();
+      if (onPosted) onPosted();
+      else window.location.reload();
     } catch {
       setError("Network error");
       notify.error("Network error", "Check your connection and try again.");
@@ -55,7 +68,9 @@ export function CommentForm({ articleId }: { articleId: string }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <Label htmlFor="comment">Add a comment</Label>
+      <Label htmlFor="comment">
+        {parentCommentId ? "Write a reply" : "Add a comment"}
+      </Label>
       <Textarea
         id="comment"
         value={body}
@@ -64,6 +79,11 @@ export function CommentForm({ articleId }: { articleId: string }) {
         minLength={2}
         maxLength={2000}
         rows={4}
+        placeholder={
+          parentCommentId
+            ? "Reply… Use @Name to mention someone in the thread."
+            : "Join the discussion… Use @Name to mention someone."
+        }
       />
       {error && (
         <p className="text-sm text-red-600 dark:text-red-400" role="alert">
@@ -71,7 +91,7 @@ export function CommentForm({ articleId }: { articleId: string }) {
         </p>
       )}
       <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-        {loading ? "Posting…" : "Post comment"}
+        {loading ? "Posting…" : parentCommentId ? "Post reply" : "Post comment"}
       </Button>
     </form>
   );

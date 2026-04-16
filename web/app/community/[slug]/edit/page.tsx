@@ -52,6 +52,7 @@ export default async function EditArticlePage({
             bodyMarkdown: article.bodyMarkdown,
             heroImageUrl: article.heroImageUrl,
             slug: article.slug,
+            tags: article.tags,
           }}
         />
       </div>

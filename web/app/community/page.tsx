@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { auth } from "@/auth";
 import {
   fetchAllArticles,
@@ -11,6 +12,9 @@ import { commentsVisibleToReader } from "@/lib/comment-filters";
 import { Button } from "@/components/ui/button";
 import { FeedPost } from "@/components/community/feed-post";
 import { ContinueLearningBanner } from "@/components/community/continue-learning-banner";
+import { CommunityGuidelinesBanner } from "@/components/community/community-guidelines-banner";
+import { COMMUNITY_TOPIC_TAGS } from "@/lib/community-topic-tags";
+import { isEditor } from "@/lib/editors";
 import type { Comment } from "@/lib/types";
 
 export const metadata = {
@@ -19,11 +23,19 @@ export const metadata = {
     "Share updates, comment, and connect with others in a respectful space.",
 };
 
-export default async function CommunityPage() {
+export default async function CommunityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const sp = await searchParams;
+  const tagFilter = (sp.tag ?? "").trim().toLowerCase();
   const session = await auth();
   const configured = isSheetsConfigured();
   const articles = configured ? await fetchAllArticles() : [];
-  const visible = articlesVisibleTo(articles, session);
+  const visible = articlesVisibleTo(articles, session).filter(
+    (a) => !tagFilter || (a.tags ?? []).includes(tagFilter)
+  );
   const allComments = configured ? await fetchAllComments() : [];
   const allLikes = configured ? await fetchAllLikes() : [];
 
@@ -56,16 +68,67 @@ export default async function CommunityPage() {
               Read and join the conversation
             </p>
           </div>
-          <Button
-            asChild
-            size="sm"
-            className="h-10 w-full shrink-0 rounded-full px-5 shadow-sm min-[420px]:h-9 min-[420px]:w-auto"
-          >
-            <Link href="/community/new">Create post</Link>
-          </Button>
+          <div className="flex w-full min-w-0 flex-col gap-2 min-[420px]:w-auto min-[420px]:flex-row min-[420px]:justify-end">
+            {session?.user ? (
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-10 w-full shrink-0 rounded-full px-4 min-[420px]:h-9 min-[420px]:w-auto"
+              >
+                <Link href="/community/drafts">My drafts</Link>
+              </Button>
+            ) : null}
+            {session?.user?.email && isEditor(session.user.email) ? (
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-10 w-full shrink-0 rounded-full px-4 min-[420px]:h-9 min-[420px]:w-auto"
+              >
+                <Link href="/community/mod/reports">Reports inbox</Link>
+              </Button>
+            ) : null}
+            <Button
+              asChild
+              size="sm"
+              className="h-10 w-full shrink-0 rounded-full px-5 shadow-sm min-[420px]:h-9 min-[420px]:w-auto"
+            >
+              <Link href="/community/new">Create post</Link>
+            </Button>
+          </div>
         </header>
 
+        <CommunityGuidelinesBanner />
         <ContinueLearningBanner />
+
+        <div className="mb-4 flex flex-wrap gap-2">
+          <Link
+            href="/community"
+            className={cn(
+              "rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium transition-colors",
+              !tagFilter
+                ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+            )}
+          >
+            All topics
+          </Link>
+          {COMMUNITY_TOPIC_TAGS.map((t) => (
+            <Link
+              key={t.id}
+              href={tagFilter === t.id ? "/community" : `/community?tag=${encodeURIComponent(t.id)}`}
+              className={cn(
+                "rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium transition-colors",
+                tagFilter === t.id
+                  ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                  : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+              )}
+            >
+              {t.label}
+            </Link>
+          ))}
+        </div>
 
         {!configured && (
           <p className="mb-4 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-950 dark:text-amber-100">
@@ -128,6 +191,11 @@ export default async function CommunityPage() {
                 shareBaseUrl={shareBaseUrl}
                 currentUserEmail={session?.user?.email}
                 listIndex={index}
+                viewerIsEditor={
+                  session?.user?.email
+                    ? isEditor(session.user.email)
+                    : false
+                }
               />
             );
           })}

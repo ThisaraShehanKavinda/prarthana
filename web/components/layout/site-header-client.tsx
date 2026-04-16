@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SiteBrandLockup } from "@/components/layout/site-brand-lockup";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { NotificationsInbox } from "@/components/layout/notifications-inbox";
 import { cn } from "@/lib/utils";
 
 function navItemActive(pathname: string, href: string) {
@@ -86,6 +87,7 @@ export function SiteHeaderClient({
 
         <div className="relative z-10 flex shrink-0 items-center gap-0.5 sm:gap-2">
           <ThemeToggle />
+          <NotificationsInbox />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

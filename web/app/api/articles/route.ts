@@ -5,18 +5,27 @@ import {
   isSheetsConfigured,
   slugExists,
 } from "@/lib/sheets";
+import { COMMUNITY_TOPIC_TAGS } from "@/lib/community-topic-tags";
 import { rateLimitKey } from "@/lib/rate-limit";
+import type { ArticleStatus } from "@/lib/types";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { MAX_HERO_IMAGE_CHARS } from "@/lib/hero-image-constants";
 
+const ALLOWED_TAG_IDS = new Set(
+  COMMUNITY_TOPIC_TAGS.map((t) => t.id as string)
+);
+
 const schema = z.object({
   title: z.string().min(3).max(200),
   excerpt: z.string().min(10).max(800),
   bodyMarkdown: z.string().min(20).max(20000),
   heroImageUrl: z.string().max(MAX_HERO_IMAGE_CHARS).optional(),
+  publishMode: z.enum(["publish", "draft", "scheduled"]).optional().default("publish"),
+  scheduledPublishAt: z.string().optional(),
+  tags: z.array(z.string()).max(6).optional(),
 });
 
 export async function POST(req: Request) {
@@ -54,7 +63,19 @@ export async function POST(req: Request) {
     );
   }
 
-  const { title, excerpt, bodyMarkdown, heroImageUrl } = parsed.data;
+  const {
+    title,
+    excerpt,
+    bodyMarkdown,
+    heroImageUrl,
+    publishMode,
+    scheduledPublishAt: schedRaw,
+    tags: tagsIn,
+  } = parsed.data;
+  const tags = (tagsIn ?? [])
+    .map((t) => t.trim().toLowerCase())
+    .filter((t) => ALLOWED_TAG_IDS.has(t));
+
   const hero = (heroImageUrl ?? "").trim();
   if (hero) {
     const isHttps = /^https:\/\//i.test(hero);
@@ -93,9 +114,33 @@ export async function POST(req: Request) {
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
-  const status = editors.includes(session.user.email.toLowerCase())
-    ? "published"
-    : "pending";
+  const isEditor = editors.includes(session.user.email.toLowerCase());
+
+  let status: ArticleStatus;
+  let scheduledPublishAt = "";
+
+  if (publishMode === "draft") {
+    status = "draft";
+  } else if (publishMode === "scheduled") {
+    const s = (schedRaw ?? "").trim();
+    if (!s) {
+      return NextResponse.json(
+        { error: "Choose a date and time for scheduled posts." },
+        { status: 400 }
+      );
+    }
+    const at = new Date(s).getTime();
+    if (Number.isNaN(at) || at <= Date.now()) {
+      return NextResponse.json(
+        { error: "Scheduled time must be in the future." },
+        { status: 400 }
+      );
+    }
+    status = "scheduled";
+    scheduledPublishAt = new Date(s).toISOString();
+  } else {
+    status = isEditor ? "published" : "pending";
+  }
 
   const row = [
     uuidv4(),
@@ -109,6 +154,8 @@ export async function POST(req: Request) {
     bodyMarkdown,
     status,
     hero,
+    tags.join(","),
+    scheduledPublishAt,
   ];
 
   try {

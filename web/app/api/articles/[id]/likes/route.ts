@@ -7,6 +7,8 @@ import {
   findLikeSheetRowNumber,
   isSheetsConfigured,
 } from "@/lib/sheets";
+import { isArticlePubliclyVisible } from "@/lib/article-feed";
+import { canViewArticle } from "@/lib/article-visibility";
 import { rateLimitKey } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
@@ -44,6 +46,12 @@ export async function GET(
 
   const session = await auth();
   const me = session?.user?.email?.toLowerCase() ?? "";
+
+  const articles = await fetchAllArticles();
+  const article = articles.find((a) => a.id === parsed.data);
+  if (!article || !canViewArticle(article, session)) {
+    return NextResponse.json({ count: 0, likers: [], likedByMe: false });
+  }
 
   const likes = (await fetchAllLikes()).filter((l) => l.articleId === parsed.data);
   const likedByMe = Boolean(
@@ -88,7 +96,10 @@ export async function POST(
 
   const articles = await fetchAllArticles();
   const article = articles.find((a) => a.id === parsed.data);
-  if (!article || article.status !== "published") {
+  if (
+    !article ||
+    !(article.status === "published" || isArticlePubliclyVisible(article))
+  ) {
     return NextResponse.json({ error: "Post not found." }, { status: 404 });
   }
 

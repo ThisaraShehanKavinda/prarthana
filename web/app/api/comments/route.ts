@@ -2,8 +2,17 @@ import { auth } from "@/auth";
 import {
   appendCommentRow,
   fetchAllArticles,
+  fetchAllComments,
   isSheetsConfigured,
 } from "@/lib/sheets";
+import { isArticlePubliclyVisible } from "@/lib/article-feed";
+import type { Article } from "@/lib/types";
+import {
+  appendNotifications,
+  lastCommentByUserOnArticle,
+  parseMentionEmails,
+  slowModeSeconds,
+} from "@/lib/comment-social";
 import { rateLimitKey } from "@/lib/rate-limit";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
@@ -12,7 +21,14 @@ import { z } from "zod";
 const schema = z.object({
   articleId: z.string().uuid(),
   body: z.string().min(2).max(2000),
+  parentCommentId: z.string().uuid().optional().nullable(),
 });
+
+function commentableArticle(article: Article | undefined): boolean {
+  if (!article) return false;
+  if (article.status === "published") return true;
+  return isArticlePubliclyVisible(article);
+}
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -51,19 +67,54 @@ export async function POST(req: Request) {
 
   const articles = await fetchAllArticles();
   const article = articles.find((a) => a.id === parsed.data.articleId);
-  if (!article || article.status !== "published") {
+  if (!article || !commentableArticle(article)) {
     return NextResponse.json({ error: "Article not found." }, { status: 404 });
   }
 
+  const allComments = await fetchAllComments();
+  const slow = slowModeSeconds();
+  if (slow > 0) {
+    const last = lastCommentByUserOnArticle(
+      allComments,
+      article.id,
+      session.user.email
+    );
+    if (last) {
+      const delta = Date.now() - new Date(last.createdAt).getTime();
+      if (delta < slow * 1000) {
+        const wait = Math.ceil((slow * 1000 - delta) / 1000);
+        return NextResponse.json(
+          {
+            error: `Slow mode: wait about ${wait}s before another comment on posts.`,
+          },
+          { status: 429 }
+        );
+      }
+    }
+  }
+
+  let parentId = (parsed.data.parentCommentId ?? "").trim();
+  if (parentId) {
+    const parent = allComments.find((c) => c.id === parentId);
+    if (!parent || parent.articleId !== article.id) {
+      return NextResponse.json({ error: "Invalid reply target." }, { status: 400 });
+    }
+  } else {
+    parentId = "";
+  }
+
   const now = new Date().toISOString();
+  const newId = uuidv4();
+  const text = parsed.data.body.trim();
   const row = [
-    uuidv4(),
+    newId,
     now,
     article.id,
     session.user.email,
     session.user.name ?? "",
-    parsed.data.body.trim(),
+    text,
     "public",
+    parentId,
   ];
 
   try {
@@ -76,5 +127,46 @@ export async function POST(req: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+  const link = `${base}/community/${article.slug}#c-${newId}`;
+
+  const refreshed = await fetchAllComments();
+  const notifs: Parameters<typeof appendNotifications>[0] = [];
+
+  if (parentId) {
+    const parent = refreshed.find((c) => c.id === parentId);
+    if (
+      parent &&
+      parent.authorEmail.toLowerCase() !== session.user.email.toLowerCase()
+    ) {
+      notifs.push({
+        recipientEmail: parent.authorEmail,
+        type: "comment_reply",
+        title: "New reply to your comment",
+        body: `${session.user.name || session.user.email} replied on “${article.title.slice(0, 72)}${article.title.length > 72 ? "…" : ""}”.`,
+        linkHref: link,
+      });
+    }
+  }
+
+  const mentionEmails = parseMentionEmails(
+    text,
+    article,
+    refreshed,
+    session.user.email
+  );
+  for (const em of mentionEmails) {
+    notifs.push({
+      recipientEmail: em,
+      type: "mention",
+      title: "You were mentioned",
+      body: `${session.user.name || session.user.email} mentioned you on “${article.title.slice(0, 60)}${article.title.length > 60 ? "…" : ""}”.`,
+      linkHref: link,
+    });
+  }
+
+  await appendNotifications(notifs);
+
+  return NextResponse.json({ ok: true, id: newId });
 }

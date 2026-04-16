@@ -1,9 +1,22 @@
 import { google } from "googleapis";
-import type { Article, ArticleLike, Comment, CommentVisibility } from "@/lib/types";
+import { normalizeArticleStatus } from "@/lib/article-feed";
+import type {
+  AppNotification,
+  Article,
+  ArticleLike,
+  Comment,
+  CommentVisibility,
+  ContentReport,
+  ReportStatus,
+  ReportTargetType,
+} from "@/lib/types";
 
 const ARTICLES_TAB = process.env.SHEETS_ARTICLES_TAB ?? "articles";
 const COMMENTS_TAB = process.env.SHEETS_COMMENTS_TAB ?? "comments";
 const LIKES_TAB = process.env.SHEETS_LIKES_TAB ?? "article_likes";
+/** Add sheet tabs + headers (row 1) in Google Sheets, or set env tab names to match yours. */
+const NOTIFICATIONS_TAB = process.env.SHEETS_NOTIFICATIONS_TAB ?? "notifications";
+const REPORTS_TAB = process.env.SHEETS_REPORTS_TAB ?? "content_reports";
 
 function getSheetsClient() {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
@@ -31,35 +44,34 @@ export function isSheetsConfigured(): boolean {
   );
 }
 
+function parseTagsCell(raw: string | undefined): string[] {
+  if (!raw?.trim()) return [];
+  return raw
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean)
+    .slice(0, 12);
+}
+
 function rowToArticle(row: string[]): Article | null {
   if (row.length < 10) return null;
-  const [
-    id,
-    createdAt,
-    updatedAt,
-    authorEmail,
-    authorName,
-    title,
-    slug,
-    excerpt,
-    bodyMarkdown,
-    status,
-    heroImageUrl,
-  ] = row;
+  const id = row[0] ?? "";
+  const slug = row[6] ?? "";
   if (!id || !slug) return null;
-  const st = status === "pending" ? "pending" : "published";
   return {
     id,
-    createdAt: createdAt ?? "",
-    updatedAt: updatedAt ?? "",
-    authorEmail: authorEmail ?? "",
-    authorName: authorName ?? "",
-    title: title ?? "",
+    createdAt: row[1] ?? "",
+    updatedAt: row[2] ?? "",
+    authorEmail: row[3] ?? "",
+    authorName: row[4] ?? "",
+    title: row[5] ?? "",
     slug,
-    excerpt: excerpt ?? "",
-    bodyMarkdown: bodyMarkdown ?? "",
-    status: st,
-    heroImageUrl: heroImageUrl ?? "",
+    excerpt: row[7] ?? "",
+    bodyMarkdown: row[8] ?? "",
+    status: normalizeArticleStatus(row[9]),
+    heroImageUrl: row[10] ?? "",
+    tags: parseTagsCell(row[11]),
+    scheduledPublishAt: (row[12] ?? "").trim(),
   };
 }
 
@@ -69,7 +81,8 @@ function parseCommentVisibility(raw: string | undefined): CommentVisibility {
 
 function rowToComment(row: string[]): Comment | null {
   if (row.length < 6) return null;
-  const [id, createdAt, articleId, authorEmail, authorName, body, visRaw] = row;
+  const [id, createdAt, articleId, authorEmail, authorName, body, visRaw, parentRaw] =
+    row;
   if (!id || !articleId) return null;
   return {
     id,
@@ -79,6 +92,7 @@ function rowToComment(row: string[]): Comment | null {
     authorName: authorName ?? "",
     body: body ?? "",
     visibility: parseCommentVisibility(visRaw),
+    parentCommentId: (parentRaw ?? "").trim(),
   };
 }
 
@@ -101,7 +115,7 @@ export async function fetchAllArticles(): Promise<Article[]> {
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${ARTICLES_TAB}!A2:K2000`,
+    range: `${ARTICLES_TAB}!A2:M2000`,
   });
   const rows = res.data.values ?? [];
   return rows
@@ -115,7 +129,7 @@ export async function fetchAllComments(): Promise<Comment[]> {
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:G2000`,
+    range: `${COMMENTS_TAB}!A2:H2000`,
   });
   const rows = res.data.values ?? [];
   return rows
@@ -345,7 +359,7 @@ export async function findCommentSheetRowNumber(
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:G2000`,
+    range: `${COMMENTS_TAB}!A2:H2000`,
   });
   const rows = res.data.values ?? [];
   for (let i = 0; i < rows.length; i++) {
@@ -416,10 +430,12 @@ export async function updateArticleRowAt(
     article.bodyMarkdown,
     article.status,
     article.heroImageUrl ?? "",
+    article.tags.join(","),
+    article.scheduledPublishAt ?? "",
   ];
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${ARTICLES_TAB}!A${rowNumber}:K${rowNumber}`,
+    range: `${ARTICLES_TAB}!A${rowNumber}:M${rowNumber}`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: [row] },
   });
@@ -463,7 +479,7 @@ export async function deleteCommentsForArticle(articleId: string): Promise<void>
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:G2000`,
+    range: `${COMMENTS_TAB}!A2:H2000`,
   });
   const rows = res.data.values ?? [];
   const rowsToDelete: number[] = [];
@@ -502,4 +518,232 @@ export async function deleteArticleById(articleId: string): Promise<boolean> {
   await deleteLikesForArticle(articleId);
   await deleteCommentsForArticle(articleId);
   return deleteArticleSheetRow(rowNumber);
+}
+
+const NOTIFICATION_TYPES = new Set<string>([
+  "comment_reply",
+  "mention",
+  "mod_comment_hidden",
+  "mod_post_hidden",
+]);
+
+function rowToNotification(row: string[]): AppNotification | null {
+  if (row.length < 8) return null;
+  const [id, createdAt, recipientEmail, type, title, body, linkHref, readAt] = row;
+  if (!id || !recipientEmail || !NOTIFICATION_TYPES.has(String(type))) return null;
+  return {
+    id,
+    createdAt: createdAt ?? "",
+    recipientEmail: recipientEmail ?? "",
+    type: type as AppNotification["type"],
+    title: title ?? "",
+    body: body ?? "",
+    linkHref: linkHref ?? "",
+    readAt: readAt ?? "",
+  };
+}
+
+export async function appendNotificationRow(values: string[]): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const { sheets, spreadsheetId } = client;
+  try {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: `${NOTIFICATIONS_TAB}!A1`,
+      valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
+      requestBody: { values: [values] },
+    });
+    return true;
+  } catch (e) {
+    console.warn("[sheets] notifications append failed (add tab notifications?):", e);
+    return false;
+  }
+}
+
+export async function fetchNotificationsForEmail(
+  email: string,
+  limit = 60
+): Promise<AppNotification[]> {
+  const client = getSheetsClient();
+  if (!client) return [];
+  const { sheets, spreadsheetId } = client;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${NOTIFICATIONS_TAB}!A2:H2000`,
+    });
+    const rows = res.data.values ?? [];
+    const em = email.toLowerCase();
+    const list = rows
+      .map((r) => rowToNotification(r.map(String)))
+      .filter((n): n is AppNotification => n !== null)
+      .filter((n) => n.recipientEmail.toLowerCase() === em)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    return list.slice(0, limit);
+  } catch (e) {
+    console.warn("[sheets] notifications read failed:", e);
+    return [];
+  }
+}
+
+export async function findNotificationSheetRowNumber(
+  notificationId: string
+): Promise<number | null> {
+  const client = getSheetsClient();
+  if (!client) return null;
+  const { sheets, spreadsheetId } = client;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${NOTIFICATIONS_TAB}!A2:H2000`,
+    });
+    const rows = res.data.values ?? [];
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i]?.[0]) === notificationId) return i + 2;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export async function updateNotificationReadAtRow(
+  rowNumber: number,
+  readAtIso: string
+): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const { sheets, spreadsheetId } = client;
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${NOTIFICATIONS_TAB}!H${rowNumber}`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: [[readAtIso]] },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function rowToReport(row: string[]): ContentReport | null {
+  if (row.length < 7) return null;
+  const [
+    id,
+    createdAt,
+    reporterEmail,
+    targetType,
+    targetId,
+    articleId,
+    reasonCode,
+    note,
+    statusRaw,
+  ] = row;
+  if (!id || !reporterEmail) return null;
+  const tt = String(targetType) as ReportTargetType;
+  if (tt !== "article" && tt !== "comment") return null;
+  const st = String(statusRaw ?? "open").toLowerCase() as ReportStatus;
+  const status: ReportStatus = st === "reviewed" ? "reviewed" : "open";
+  return {
+    id,
+    createdAt: createdAt ?? "",
+    reporterEmail,
+    targetType: tt,
+    targetId: targetId ?? "",
+    articleId: articleId ?? "",
+    reasonCode: reasonCode ?? "",
+    note: note ?? "",
+    status,
+  };
+}
+
+export async function appendReportRow(values: string[]): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const { sheets, spreadsheetId } = client;
+  try {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: `${REPORTS_TAB}!A1`,
+      valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
+      requestBody: { values: [values] },
+    });
+    return true;
+  } catch (e) {
+    console.warn("[sheets] reports append failed (add tab content_reports?):", e);
+    return false;
+  }
+}
+
+export async function fetchOpenReports(limit = 100): Promise<ContentReport[]> {
+  const client = getSheetsClient();
+  if (!client) return [];
+  const { sheets, spreadsheetId } = client;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${REPORTS_TAB}!A2:I500`,
+    });
+    const rows = res.data.values ?? [];
+    return rows
+      .map((r) => rowToReport(r.map(String)))
+      .filter((r): r is ContentReport => r !== null)
+      .filter((r) => r.status === "open")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .slice(0, limit);
+  } catch (e) {
+    console.warn("[sheets] reports read failed:", e);
+    return [];
+  }
+}
+
+export async function findReportSheetRowNumber(
+  reportId: string
+): Promise<number | null> {
+  const client = getSheetsClient();
+  if (!client) return null;
+  const { sheets, spreadsheetId } = client;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${REPORTS_TAB}!A2:I500`,
+    });
+    const rows = res.data.values ?? [];
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i]?.[0]) === reportId) return i + 2;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export async function updateReportStatusAtRow(
+  rowNumber: number,
+  status: ReportStatus
+): Promise<boolean> {
+  const client = getSheetsClient();
+  if (!client) return false;
+  const { sheets, spreadsheetId } = client;
+  try {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${REPORTS_TAB}!I${rowNumber}`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: [[status]] },
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }

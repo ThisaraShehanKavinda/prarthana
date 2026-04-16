@@ -11,6 +11,7 @@ import { encodeImageFileToHeroDataUrl } from "@/lib/encode-hero-image-client";
 import { plainTextFromMarkdown } from "@/lib/markdown-preview";
 import { ImagePlus, X } from "lucide-react";
 import type { Article } from "@/lib/types";
+import { COMMUNITY_TOPIC_TAGS } from "@/lib/community-topic-tags";
 import { notify } from "@/lib/notify";
 
 type Mode = "create" | "edit";
@@ -25,7 +26,7 @@ export function NewArticleForm({
   articleId?: string;
   initial?: Pick<
     Article,
-    "title" | "excerpt" | "bodyMarkdown" | "heroImageUrl" | "slug"
+    "title" | "excerpt" | "bodyMarkdown" | "heroImageUrl" | "slug" | "tags"
   >;
 }) {
   const router = useRouter();
@@ -40,6 +41,17 @@ export function NewArticleForm({
   const [encodingImage, setEncodingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
+  const [publishMode, setPublishMode] = useState<"publish" | "draft" | "scheduled">(
+    "publish"
+  );
+  const [scheduleAt, setScheduleAt] = useState("");
+
+  function toggleTag(id: string) {
+    setTags((prev) =>
+      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id].slice(0, 6)
+    );
+  }
 
   useEffect(() => {
     if (mode === "edit") return;
@@ -104,6 +116,7 @@ export function NewArticleForm({
             excerpt: excerptFinal,
             bodyMarkdown: body,
             heroImageUrl: hero || undefined,
+            tags,
           }),
         });
         const data = (await res.json()) as { slug?: string; error?: string };
@@ -119,6 +132,10 @@ export function NewArticleForm({
         if (slug) router.push(`/community/${slug}`);
         else router.push("/community");
       } else {
+        const schedIso =
+          publishMode === "scheduled" && scheduleAt.trim()
+            ? new Date(scheduleAt).toISOString()
+            : undefined;
         const res = await fetch("/api/articles", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -127,9 +144,16 @@ export function NewArticleForm({
             excerpt: excerptFinal,
             bodyMarkdown: body,
             heroImageUrl: hero || undefined,
+            publishMode,
+            scheduledPublishAt: schedIso,
+            tags,
           }),
         });
-        const data = (await res.json()) as { slug?: string; error?: string };
+        const data = (await res.json()) as {
+          slug?: string;
+          status?: string;
+          error?: string;
+        };
         if (!res.ok) {
           const msg = data.error ?? "Failed to publish";
           setError(msg);
@@ -137,8 +161,11 @@ export function NewArticleForm({
           setLoading(false);
           return;
         }
-        notify.success("Post published");
-        if (data.slug) router.push(`/community/${data.slug}`);
+        if (data.status === "draft") notify.success("Draft saved");
+        else if (data.status === "scheduled") notify.success("Post scheduled");
+        else notify.success("Post submitted");
+        if (data.status === "draft") router.push("/community/drafts");
+        else if (data.slug) router.push(`/community/${data.slug}`);
         else router.push("/community");
       }
     } catch {
@@ -161,7 +188,19 @@ export function NewArticleForm({
 
   const heading = mode === "edit" ? "Edit post" : "Create post";
   const submitLabel =
-    mode === "edit" ? (loading ? "Saving…" : "Save changes") : loading ? "Posting…" : "Post";
+    mode === "edit"
+      ? loading
+        ? "Saving…"
+        : "Save changes"
+      : loading
+        ? publishMode === "draft"
+          ? "Saving…"
+          : "Posting…"
+        : publishMode === "draft"
+          ? "Save draft"
+          : publishMode === "scheduled"
+            ? "Schedule post"
+            : "Post";
 
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-lg">
@@ -273,6 +312,92 @@ export function NewArticleForm({
             className="mt-1 rounded-xl text-sm"
           />
         </div>
+
+        {mode === "create" ? (
+          <div className="space-y-3 border-t border-[var(--border)] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+              Topics (optional)
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {COMMUNITY_TOPIC_TAGS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => toggleTag(t.id)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                    tags.includes(t.id)
+                      ? "border-[var(--primary)] bg-[var(--primary)]/12 text-[var(--primary)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+              When to post
+            </p>
+            <div className="flex flex-col gap-2 text-sm">
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 has-[:checked]:border-[var(--primary)]">
+                <input
+                  type="radio"
+                  name="pub"
+                  checked={publishMode === "publish"}
+                  onChange={() => setPublishMode("publish")}
+                />
+                Publish now (may be reviewed first)
+              </label>
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 has-[:checked]:border-[var(--primary)]">
+                <input
+                  type="radio"
+                  name="pub"
+                  checked={publishMode === "draft"}
+                  onChange={() => setPublishMode("draft")}
+                />
+                Save as draft
+              </label>
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 has-[:checked]:border-[var(--primary)]">
+                <input
+                  type="radio"
+                  name="pub"
+                  checked={publishMode === "scheduled"}
+                  onChange={() => setPublishMode("scheduled")}
+                />
+                Schedule
+              </label>
+              {publishMode === "scheduled" ? (
+                <input
+                  type="datetime-local"
+                  value={scheduleAt}
+                  onChange={(e) => setScheduleAt(e.target.value)}
+                  className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm"
+                />
+              ) : null}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3 border-t border-[var(--border)] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
+              Topics
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {COMMUNITY_TOPIC_TAGS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => toggleTag(t.id)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                    tags.includes(t.id)
+                      ? "border-[var(--primary)] bg-[var(--primary)]/12 text-[var(--primary)]"
+                      : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {error && (
           <p className="px-4 pb-2 text-sm text-red-600 dark:text-red-400" role="alert">

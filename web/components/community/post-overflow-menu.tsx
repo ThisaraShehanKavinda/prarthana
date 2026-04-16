@@ -20,9 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { notify } from "@/lib/notify";
-import { SITE_BRAND_LOCKUP_PLAIN } from "@/lib/site-brand";
-
-const REPORT_EMAIL = "hello@example.com";
+import { ReportContentDialog } from "@/components/community/report-content-dialog";
 
 export function PostOverflowMenu({
   articleId,
@@ -46,6 +44,7 @@ export function PostOverflowMenu({
 }) {
   const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -60,16 +59,6 @@ export function PostOverflowMenu({
     } catch {
       notify.error("Could not copy", "Your browser may block clipboard access.");
     }
-  }
-
-  function reportPost() {
-    const subject = encodeURIComponent(
-      `${SITE_BRAND_LOCKUP_PLAIN} — report post: ${title.slice(0, 50)}`
-    );
-    const body = encodeURIComponent(
-      `I want to report this post:\n${shareUrl}\n\nReason:\n`
-    );
-    window.location.href = `mailto:${REPORT_EMAIL}?subject=${subject}&body=${body}`;
   }
 
   async function confirmDelete() {
@@ -155,21 +144,35 @@ export function PostOverflowMenu({
           ) : (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer gap-2" onSelect={() => reportPost()}>
-                <Flag className="h-4 w-4 shrink-0" />
-                Report post
-              </DropdownMenuItem>
+              {currentUserEmail ? (
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2"
+                  onSelect={() => setReportOpen(true)}
+                >
+                  <Flag className="h-4 w-4 shrink-0" />
+                  Report post
+                </DropdownMenuItem>
+              ) : null}
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ReportContentDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        targetType="article"
+        targetId={articleId}
+        articleId={articleId}
+      />
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete this post?</DialogTitle>
             <p className="text-left text-sm text-[var(--muted-foreground)]">
-              This removes the post and its comments. You can’t undo this.
+              This removes “{title.slice(0, 120)}
+              {title.length > 120 ? "…" : ""}” and its comments. You can’t undo this.
             </p>
           </DialogHeader>
           {deleteError ? (

@@ -12,6 +12,7 @@ import { LikeToggle } from "@/components/community/like-toggle";
 import { CommentFormCompact } from "@/components/community/comment-form-compact";
 import { CommentBubbles } from "@/components/community/comment-bubbles";
 import { PostOverflowMenu } from "@/components/community/post-overflow-menu";
+import { topicLabelForId } from "@/lib/community-topic-tags";
 import { useCommunityVisitBaseline } from "@/components/community/community-visit-provider";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +42,7 @@ export function FeedPost({
   shareBaseUrl,
   currentUserEmail,
   listIndex,
+  viewerIsEditor,
 }: {
   article: Article;
   comments: Comment[];
@@ -50,6 +52,7 @@ export function FeedPost({
   currentUserEmail?: string | null;
   /** Staggered entrance on the main feed; omit on other surfaces. */
   listIndex?: number;
+  viewerIsEditor?: boolean;
 }) {
   const reduce = useReducedMotion();
   const visit = useCommunityVisitBaseline();
@@ -62,6 +65,11 @@ export function FeedPost({
   const url = `${shareBaseUrl.replace(/\/$/, "")}/community/${article.slug}`;
   const author = article.authorName || article.authorEmail;
   const topComments = comments.slice(-3);
+  const canModerateFeed =
+    Boolean(
+      currentUserEmail &&
+        currentUserEmail.toLowerCase() === article.authorEmail.toLowerCase()
+    ) || Boolean(viewerIsEditor);
   const stagger =
     listIndex !== undefined && !reduce
       ? { delay: Math.min(listIndex, 14) * 0.04 }
@@ -111,6 +119,15 @@ export function FeedPost({
                     New
                   </Badge>
                 )}
+                {article.tags?.map((tid) => (
+                  <Badge
+                    key={tid}
+                    variant="outline"
+                    className="text-[10px] font-normal text-[var(--muted-foreground)]"
+                  >
+                    {topicLabelForId(tid)}
+                  </Badge>
+                ))}
               </div>
               <h2 className="mt-1 text-lg font-bold leading-snug tracking-tight text-[var(--foreground)]">
                 <Link
@@ -198,8 +215,11 @@ export function FeedPost({
           </p>
           <CommentBubbles
             articleAuthorEmail={article.authorEmail}
+            articleId={article.id}
             comments={topComments}
             currentUserEmail={currentUserEmail}
+            canModerateComments={canModerateFeed}
+            isEditorUser={viewerIsEditor}
           />
         </div>
       )}
