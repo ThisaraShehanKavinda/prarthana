@@ -160,6 +160,8 @@ export async function PATCH(
     status,
     tags,
     scheduledPublishAt,
+    authorImageUrl:
+      (session.user.image ?? "").trim() || article.authorImageUrl || "",
   };
 
   try {

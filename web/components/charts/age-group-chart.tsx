@@ -16,7 +16,7 @@ export function AgeGroupChart({
   data: { name: string; percent: number }[];
 }) {
   return (
-    <div className="h-[320px] w-full min-w-0 min-h-[280px]">
+    <div className="h-[260px] w-full min-w-0 min-h-[240px] sm:h-[300px] sm:min-h-[260px] lg:h-[320px] lg:min-h-[280px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-[var(--border)]" />

@@ -156,6 +156,7 @@ export async function POST(req: Request) {
     hero,
     tags.join(","),
     scheduledPublishAt,
+    (session.user.image ?? "").trim(),
   ];
 
   try {

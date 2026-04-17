@@ -73,7 +73,7 @@ export default function LearnIndexPage() {
           literacy, not to replace clinicians.
         </p>
       </FadeIn>
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {sections.map((s, i) => (
           <FadeIn key={s.href} delay={0.04 * i}>
             <LearnTopicCard

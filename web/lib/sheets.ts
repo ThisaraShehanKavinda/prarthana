@@ -72,6 +72,7 @@ function rowToArticle(row: string[]): Article | null {
     heroImageUrl: row[10] ?? "",
     tags: parseTagsCell(row[11]),
     scheduledPublishAt: (row[12] ?? "").trim(),
+    authorImageUrl: (row[13] ?? "").trim(),
   };
 }
 
@@ -81,7 +82,7 @@ function parseCommentVisibility(raw: string | undefined): CommentVisibility {
 
 function rowToComment(row: string[]): Comment | null {
   if (row.length < 6) return null;
-  const [id, createdAt, articleId, authorEmail, authorName, body, visRaw, parentRaw] =
+  const [id, createdAt, articleId, authorEmail, authorName, body, visRaw, parentRaw, imgRaw] =
     row;
   if (!id || !articleId) return null;
   return {
@@ -90,6 +91,7 @@ function rowToComment(row: string[]): Comment | null {
     articleId,
     authorEmail: authorEmail ?? "",
     authorName: authorName ?? "",
+    authorImageUrl: (imgRaw ?? "").trim(),
     body: body ?? "",
     visibility: parseCommentVisibility(visRaw),
     parentCommentId: (parentRaw ?? "").trim(),
@@ -98,7 +100,7 @@ function rowToComment(row: string[]): Comment | null {
 
 function rowToLike(row: string[]): ArticleLike | null {
   if (row.length < 5) return null;
-  const [id, createdAt, articleId, authorEmail, authorName] = row;
+  const [id, createdAt, articleId, authorEmail, authorName, imgRaw] = row;
   if (!id || !articleId) return null;
   return {
     id,
@@ -106,6 +108,7 @@ function rowToLike(row: string[]): ArticleLike | null {
     articleId,
     authorEmail: authorEmail ?? "",
     authorName: authorName ?? "",
+    authorImageUrl: (imgRaw ?? "").trim(),
   };
 }
 
@@ -115,7 +118,7 @@ export async function fetchAllArticles(): Promise<Article[]> {
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${ARTICLES_TAB}!A2:M2000`,
+    range: `${ARTICLES_TAB}!A2:N2000`,
   });
   const rows = res.data.values ?? [];
   return rows
@@ -129,7 +132,7 @@ export async function fetchAllComments(): Promise<Comment[]> {
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:H2000`,
+    range: `${COMMENTS_TAB}!A2:I2000`,
   });
   const rows = res.data.values ?? [];
   return rows
@@ -222,7 +225,7 @@ export async function fetchAllLikes(): Promise<ArticleLike[]> {
   try {
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${LIKES_TAB}!A2:E2000`,
+      range: `${LIKES_TAB}!A2:F2000`,
     });
     const rows = res.data.values ?? [];
     return rows
@@ -258,7 +261,7 @@ export async function findLikeSheetRowNumber(
   try {
     const res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${LIKES_TAB}!A2:E2000`,
+      range: `${LIKES_TAB}!A2:F2000`,
     });
     const rows = res.data.values ?? [];
     const em = likerEmail.toLowerCase();
@@ -316,7 +319,7 @@ export async function deleteLikesForArticle(articleId: string): Promise<void> {
   try {
     res = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${LIKES_TAB}!A2:E2000`,
+      range: `${LIKES_TAB}!A2:F2000`,
     });
   } catch {
     return;
@@ -359,7 +362,7 @@ export async function findCommentSheetRowNumber(
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:H2000`,
+    range: `${COMMENTS_TAB}!A2:I2000`,
   });
   const rows = res.data.values ?? [];
   for (let i = 0; i < rows.length; i++) {
@@ -432,10 +435,11 @@ export async function updateArticleRowAt(
     article.heroImageUrl ?? "",
     article.tags.join(","),
     article.scheduledPublishAt ?? "",
+    article.authorImageUrl ?? "",
   ];
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${ARTICLES_TAB}!A${rowNumber}:M${rowNumber}`,
+    range: `${ARTICLES_TAB}!A${rowNumber}:N${rowNumber}`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: [row] },
   });
@@ -479,7 +483,7 @@ export async function deleteCommentsForArticle(articleId: string): Promise<void>
   const { sheets, spreadsheetId } = client;
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${COMMENTS_TAB}!A2:H2000`,
+    range: `${COMMENTS_TAB}!A2:I2000`,
   });
   const rows = res.data.values ?? [];
   const rowsToDelete: number[] = [];

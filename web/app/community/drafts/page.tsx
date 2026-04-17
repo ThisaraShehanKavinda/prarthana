@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { fetchAllArticles, isSheetsConfigured } from "@/lib/sheets";
 import { authorOwnsArticle } from "@/lib/article-feed";
+import { articleStatusDisplayLabel } from "@/lib/article-status-label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -32,15 +33,15 @@ export default async function MyDraftsPage() {
     );
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <div className="mx-auto w-full max-w-lg px-4 py-10 sm:max-w-xl sm:px-6 lg:max-w-2xl xl:max-w-3xl lg:px-8">
       <p className="text-sm text-[var(--muted-foreground)]">
         <Link href="/community" className="text-[var(--primary)] hover:underline">
           ← Community
         </Link>
       </p>
-      <h1 className="mt-4 text-2xl font-bold tracking-tight">My drafts &amp; pending</h1>
+      <h1 className="mt-4 text-2xl font-bold tracking-tight">My drafts &amp; reviews</h1>
       <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-        Scheduled posts appear here until they go live.
+        Drafts, scheduled posts, and posts under editorial review appear here.
       </p>
       <div className="mt-8 space-y-3">
         {mine.length === 0 ? (
@@ -57,8 +58,8 @@ export default async function MyDraftsPage() {
                   Updated {new Date(a.updatedAt).toLocaleString()}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  <Badge variant="secondary" className="text-[10px] capitalize">
-                    {a.status}
+                  <Badge variant="secondary" className="text-[10px]">
+                    {articleStatusDisplayLabel(a.status)}
                   </Badge>
                   {a.status === "scheduled" && a.scheduledPublishAt ? (
                     <Badge variant="outline" className="text-[10px]">

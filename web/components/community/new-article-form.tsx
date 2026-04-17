@@ -13,6 +13,7 @@ import { ImagePlus, X } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { COMMUNITY_TOPIC_TAGS } from "@/lib/community-topic-tags";
 import { notify } from "@/lib/notify";
+import { AppNotice } from "@/components/ui/app-notice";
 
 type Mode = "create" | "edit";
 
@@ -203,7 +204,7 @@ export function NewArticleForm({
             : "Post";
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-lg">
+    <form onSubmit={onSubmit} className="mx-auto w-full max-w-lg lg:max-w-2xl">
       <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card)] shadow-lg">
         <div className="border-b border-[var(--border)] px-4 py-3 text-center text-sm font-semibold text-[var(--foreground)]">
           {heading}
@@ -399,11 +400,11 @@ export function NewArticleForm({
           </div>
         )}
 
-        {error && (
-          <p className="px-4 pb-2 text-sm text-red-600 dark:text-red-400" role="alert">
-            {error}
-          </p>
-        )}
+        {error ? (
+          <div className="px-4 pb-2">
+            <AppNotice variant="error">{error}</AppNotice>
+          </div>
+        ) : null}
 
         <div className="p-3">
           <Button

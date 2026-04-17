@@ -10,7 +10,7 @@ export function BurdenPie({
   data: { name: string; value: number }[];
 }) {
   return (
-    <div className="h-[280px] w-full min-w-0 min-h-[260px]">
+    <div className="h-[220px] w-full min-w-0 min-h-[200px] sm:h-[280px] sm:min-h-[260px]">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -19,8 +19,8 @@ export function BurdenPie({
             nameKey="name"
             cx="50%"
             cy="50%"
-            innerRadius={60}
-            outerRadius={100}
+            innerRadius="42%"
+            outerRadius="72%"
             paddingAngle={2}
           >
             {data.map((_, i) => (

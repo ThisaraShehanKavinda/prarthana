@@ -2,19 +2,24 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { AppNotice } from "@/components/ui/app-notice";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { notify } from "@/lib/notify";
+import { CommentTextareaWithMentions } from "@/components/community/comment-textarea-with-mentions";
+import type { MentionCandidate } from "@/lib/mention-candidates";
 
 export function CommentForm({
   articleId,
   parentCommentId,
   onPosted,
+  mentionCandidates = [],
 }: {
   articleId: string;
   parentCommentId?: string | null;
   onPosted?: () => void;
+  /** Post author + comment authors for @ autocomplete. */
+  mentionCandidates?: MentionCandidate[];
 }) {
   const { data: session, status } = useSession();
   const [body, setBody] = useState("");
@@ -67,32 +72,33 @@ export function CommentForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} className="w-full min-w-0 space-y-3">
       <Label htmlFor="comment">
         {parentCommentId ? "Write a reply" : "Add a comment"}
       </Label>
-      <Textarea
+      <CommentTextareaWithMentions
         id="comment"
         value={body}
-        onChange={(e) => setBody(e.target.value)}
+        onChange={setBody}
+        mentionCandidates={mentionCandidates}
         required
         minLength={2}
         maxLength={2000}
         rows={4}
+        disabled={loading}
+        wrapperClassName="w-full min-w-0"
         placeholder={
           parentCommentId
-            ? "Reply… Use @Name to mention someone in the thread."
-            : "Join the discussion… Use @Name to mention someone."
+            ? "Reply… Type @ to mention someone in the thread."
+            : "Join the discussion… Type @ for name suggestions."
         }
       />
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-          {error}
-        </p>
-      )}
-      <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-        {loading ? "Posting…" : parentCommentId ? "Post reply" : "Post comment"}
-      </Button>
+      {error ? <AppNotice variant="error">{error}</AppNotice> : null}
+      <div className="flex justify-end">
+        <Button type="submit" className="min-w-[7.5rem]" disabled={loading}>
+          {loading ? "Posting…" : parentCommentId ? "Post reply" : "Post comment"}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Sinhala, Noto_Serif_Sinhala } from "next/font/google";
 import "./globals.css";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
-import { AppToaster } from "@/components/providers/app-toaster";
+import { AppMessagePortal } from "@/components/providers/app-message-portal";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -32,6 +32,12 @@ const notoSerifSinhala = Noto_Serif_Sinhala({
   weight: ["400", "600", "700"],
   display: "swap",
 });
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -64,19 +70,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSinhala.variable} ${notoSerifSinhala.variable} min-h-screen antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSinhala.variable} ${notoSerifSinhala.variable} min-h-screen min-w-0 antialiased`}
       >
         <ThemeProvider>
           <AuthSessionProvider>
-            <AppToaster />
-            <div className="flex min-h-screen flex-col">
+            <div className="flex min-h-screen min-w-0 flex-col pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
               <SiteHeader />
-              <main className="flex-1 pb-[max(0px,env(safe-area-inset-bottom))]">{children}</main>
+              <main className="min-w-0 flex-1 pb-[max(0px,env(safe-area-inset-bottom))]">{children}</main>
               <div className="mx-auto w-full max-w-6xl px-4 pb-6 sm:px-6 lg:px-8">
                 <MedicalDisclaimer />
               </div>
               <SiteFooter />
             </div>
+            <AppMessagePortal />
           </AuthSessionProvider>
         </ThemeProvider>
       </body>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Comment } from "@/lib/types";
+import { buildMentionCandidates } from "@/lib/mention-candidates";
 import { CommentBubbles } from "@/components/community/comment-bubbles";
 import { CommentForm } from "@/components/community/comment-form";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,8 @@ import { Button } from "@/components/ui/button";
 export function ArticleCommentsSection({
   articleId,
   articleAuthorEmail,
+  articleAuthorName,
+  articleAuthorImageUrl,
   comments,
   currentUserEmail,
   canModerateComments,
@@ -17,6 +20,9 @@ export function ArticleCommentsSection({
 }: {
   articleId: string;
   articleAuthorEmail: string;
+  articleAuthorName: string;
+  /** Post author profile URL for @mention suggestions. */
+  articleAuthorImageUrl?: string;
   comments: Comment[];
   currentUserEmail?: string | null;
   canModerateComments: boolean;
@@ -24,6 +30,26 @@ export function ArticleCommentsSection({
 }) {
   const router = useRouter();
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
+
+  const mentionCandidates = useMemo(
+    () =>
+      buildMentionCandidates(
+        {
+          authorEmail: articleAuthorEmail,
+          authorName: articleAuthorName,
+          authorImageUrl: articleAuthorImageUrl,
+        },
+        comments,
+        currentUserEmail
+      ),
+    [
+      articleAuthorEmail,
+      articleAuthorName,
+      articleAuthorImageUrl,
+      comments,
+      currentUserEmail,
+    ]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -64,6 +90,7 @@ export function ArticleCommentsSection({
         <CommentForm
           articleId={articleId}
           parentCommentId={replyTo?.id}
+          mentionCandidates={mentionCandidates}
           onPosted={() => {
             setReplyTo(null);
             router.refresh();

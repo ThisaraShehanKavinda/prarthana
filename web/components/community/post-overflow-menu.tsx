@@ -18,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AppNotice } from "@/components/ui/app-notice";
 import { cn } from "@/lib/utils";
 import { notify } from "@/lib/notify";
 import { ReportContentDialog } from "@/components/community/report-content-dialog";
@@ -175,11 +176,7 @@ export function PostOverflowMenu({
               {title.length > 120 ? "…" : ""}” and its comments. You can’t undo this.
             </p>
           </DialogHeader>
-          {deleteError ? (
-            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-              {deleteError}
-            </p>
-          ) : null}
+          {deleteError ? <AppNotice variant="error">{deleteError}</AppNotice> : null}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setDeleteOpen(false)}>
               Cancel

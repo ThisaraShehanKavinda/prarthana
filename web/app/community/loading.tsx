@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function CommunityLoading() {
   return (
     <div className="min-h-screen bg-[var(--muted)]/40 pb-20 pt-6 sm:pt-10">
-      <div className="mx-auto max-w-lg px-3 sm:px-4">
+      <div className="mx-auto w-full max-w-lg px-3 sm:max-w-xl sm:px-4 lg:max-w-2xl xl:max-w-3xl lg:px-6">
         <header className="mb-4 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start min-[420px]:justify-between min-[420px]:gap-4">
           <div className="min-w-0 flex-1 space-y-2">
             <Skeleton className="h-7 w-40 rounded-lg" />

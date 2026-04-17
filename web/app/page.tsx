@@ -14,28 +14,28 @@ export default function HomePage() {
   return (
     <div>
       <section className="mesh-hero relative overflow-hidden border-b border-[var(--border)]">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:flex lg:items-center lg:gap-12 lg:px-8 lg:py-24">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:flex lg:items-center lg:gap-12 lg:px-8 lg:py-24">
           <div className="max-w-2xl flex-1">
             <FadeIn>
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-[var(--primary)]">
                 Cancer literacy, reimagined
               </p>
-              <h1 className="text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl lg:text-6xl">
+              <h1 className="text-balance text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl md:text-5xl lg:text-6xl">
                 Understand cancer with clarity, data, and care.
               </h1>
-              <p className="mt-5 max-w-xl text-lg text-[var(--muted-foreground)]">
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--muted-foreground)] sm:text-lg">
                 <SiteBrandLockup variant="body" />{" "}
                 combines interactive charts, evidence-grounded explainers, and a
                 respectful community space—so you can learn and share in one place.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild size="lg">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Button asChild size="lg" className="w-full min-h-11 sm:w-auto">
                   <Link href="/learn/burden">
                     Explore the data
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg">
+                <Button asChild variant="outline" size="lg" className="w-full min-h-11 sm:w-auto">
                   <Link href="/community">Join the community</Link>
                 </Button>
               </div>
@@ -84,9 +84,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <FadeIn>
-          <h2 className="text-2xl font-bold tracking-tight">Three ways to explore</h2>
+          <h2 className="text-balance text-xl font-bold tracking-tight sm:text-2xl">Three ways to explore</h2>
           <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
             Move from population-level context to cellular science, then share
             lived perspectives—always alongside trusted references.

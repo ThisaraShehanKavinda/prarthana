@@ -1,31 +1,37 @@
-import { toast } from "sonner";
+import { closeAppMessage, showAppAlert, showAppConfirm } from "@/lib/app-message-store";
 
-/** App-wide toasts: success, error, warning, info (Sonner). */
+/**
+ * App-wide feedback: centered modal with dimmed backdrop (no toasts).
+ * Maps to success / error / warning / info alerts.
+ */
 export const notify = {
   success(message: string, description?: string) {
-    return toast.success(message, description ? { description } : undefined);
+    showAppAlert("success", message, description);
   },
   error(message: string, description?: string) {
-    return toast.error(message, description ? { description } : undefined);
+    showAppAlert("error", message, description);
   },
   warning(message: string, description?: string) {
-    return toast.warning(message, description ? { description } : undefined);
+    showAppAlert("warning", message, description);
   },
   info(message: string, description?: string) {
-    return toast.info(message, description ? { description } : undefined);
+    showAppAlert("info", message, description);
   },
   loading(message: string) {
-    return toast.loading(message);
+    showAppAlert("info", message, "Please wait…");
   },
-  dismiss(id: string | number) {
-    toast.dismiss(id);
+  dismiss() {
+    closeAppMessage();
   },
-  promise: toast.promise,
+  /** Not used in this app; prefer `async`/`await` + `notify.*`. */
+  promise: () => {
+    console.warn("[notify] promise() is not implemented.");
+  },
 };
 
 /**
- * Non-blocking confirmation (toast with action + cancel).
- * Use for destructive steps instead of window.confirm.
+ * Centered confirm dialog (dimmed backdrop, focus in dialog).
+ * Use for destructive steps instead of `window.confirm`.
  */
 export function confirmDestructive(options: {
   title: string;
@@ -42,25 +48,12 @@ export function confirmDestructive(options: {
     onConfirm,
   } = options;
 
-  toast.warning(title, {
+  showAppConfirm({
+    title,
     description,
-    duration: 25_000,
-    action: {
-      label: confirmLabel,
-      onClick: () => {
-        void (async () => {
-          try {
-            await onConfirm();
-          } catch (e) {
-            console.error(e);
-            notify.error("Something went wrong. Please try again.");
-          }
-        })();
-      },
-    },
-    cancel: {
-      label: cancelLabel,
-      onClick: () => {},
-    },
+    confirmLabel,
+    cancelLabel,
+    destructive: true,
+    onConfirm,
   });
 }

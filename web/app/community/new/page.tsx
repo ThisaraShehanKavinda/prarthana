@@ -16,7 +16,7 @@ export default async function NewArticlePage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14 lg:max-w-4xl lg:px-8">
       <p className="text-sm text-[var(--muted-foreground)]">
         <Link href="/community" className="text-[var(--primary)] underline">
           ← Back to community

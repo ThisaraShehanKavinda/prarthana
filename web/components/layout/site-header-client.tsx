@@ -49,14 +49,14 @@ export function SiteHeaderClient({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-[var(--border)]/80 bg-[var(--background)]/90 backdrop-blur-md supports-[backdrop-filter]:bg-[var(--background)]/75 transition-[box-shadow,background-color] duration-300",
+        "sticky top-0 z-40 border-b border-[var(--border)]/80 bg-[var(--background)]/90 pt-[env(safe-area-inset-top)] backdrop-blur-md supports-[backdrop-filter]:bg-[var(--background)]/75 transition-[box-shadow,background-color] duration-300",
         scrolled && "shadow-sm shadow-[var(--foreground)]/[0.06] supports-[backdrop-filter]:bg-[var(--background)]/88"
       )}
     >
       <div className="relative mx-auto flex h-14 min-w-0 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:gap-3 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="relative z-10 min-w-0 shrink rounded-lg py-1 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="relative z-10 min-w-0 flex-1 rounded-lg py-1 pr-1 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-[var(--ring)] md:w-auto md:flex-none md:max-w-[min(28rem,42vw)] md:pr-0"
         >
           <SiteBrandLockup variant="header" />
         </Link>
@@ -88,7 +88,7 @@ export function SiteHeaderClient({
         <div className="relative z-10 flex shrink-0 items-center gap-0.5 sm:gap-2">
           <ThemeToggle />
           <NotificationsInbox />
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 type="button"
@@ -101,9 +101,11 @@ export function SiteHeaderClient({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              align="end"
-              className="w-[min(100vw-1.5rem,16rem)]"
-              sideOffset={6}
+              align="center"
+              side="bottom"
+              sideOffset={8}
+              collisionPadding={16}
+              className="w-[min(calc(100vw-2rem),18rem)]"
             >
               <DropdownMenuItem asChild>
                 <Link

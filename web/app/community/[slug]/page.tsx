@@ -12,6 +12,7 @@ import { canViewArticle } from "@/lib/article-visibility";
 import { isArticlePubliclyVisible } from "@/lib/article-feed";
 import { isEditor } from "@/lib/editors";
 import { topicLabelForId } from "@/lib/community-topic-tags";
+import { articleStatusDisplayLabel } from "@/lib/article-status-label";
 import { Badge } from "@/components/ui/badge";
 import { ArticleCommentsSection } from "@/components/community/article-comments-section";
 import { ShareBar } from "@/components/community/share-bar";
@@ -19,6 +20,7 @@ import { LikeToggle } from "@/components/community/like-toggle";
 import { ExpandableMarkdown } from "@/components/community/expandable-markdown";
 import { Separator } from "@/components/ui/separator";
 import { PostOverflowMenu } from "@/components/community/post-overflow-menu";
+import { AuthorAvatar } from "@/components/community/author-avatar";
 
 export async function generateMetadata({
   params,
@@ -98,11 +100,11 @@ export default async function ArticlePage({
       ? "Scheduled"
       : article.status === "draft"
         ? "Draft"
-        : article.status;
+        : articleStatusDisplayLabel(article.status);
 
   return (
     <article className="min-h-screen bg-[var(--muted)]/30 pb-16 pt-4 sm:pt-6">
-      <div className="mx-auto w-full max-w-lg px-3 sm:max-w-2xl sm:px-4">
+      <div className="mx-auto w-full max-w-lg px-3 sm:max-w-2xl sm:px-4 lg:max-w-3xl xl:max-w-4xl lg:px-6">
         <p className="text-sm text-[var(--muted-foreground)]">
           <Link href="/community" className="font-medium text-[var(--primary)] hover:underline">
             ← Feed
@@ -111,17 +113,12 @@ export default async function ArticlePage({
 
         <div className="mt-4 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
           <div className="flex gap-3 p-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--primary)]/15 text-base font-bold text-[var(--primary)]">
-              {(article.authorName || article.authorEmail || "?")
-                .split(/\s+/)
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((w) => w[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2) ||
-                "?"}
-            </div>
+            <AuthorAvatar
+              imageUrl={article.authorImageUrl}
+              name={article.authorName}
+              email={article.authorEmail}
+              size="lg"
+            />
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-2 min-[480px]:flex-row min-[480px]:items-start min-[480px]:justify-between min-[480px]:gap-3">
                 <div className="min-w-0 flex-1">
@@ -222,6 +219,8 @@ export default async function ArticlePage({
           <ArticleCommentsSection
             articleId={article.id}
             articleAuthorEmail={article.authorEmail}
+            articleAuthorName={article.authorName}
+            articleAuthorImageUrl={article.authorImageUrl}
             comments={comments}
             currentUserEmail={session?.user?.email}
             canModerateComments={canModComments}

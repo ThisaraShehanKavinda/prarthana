@@ -20,7 +20,7 @@ export function ThemeToggle() {
   }, []);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
@@ -38,7 +38,13 @@ export function ThemeToggle() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={6} className="min-w-[10.5rem]">
+      <DropdownMenuContent
+        align="center"
+        side="bottom"
+        sideOffset={8}
+        collisionPadding={16}
+        className="min-w-[10.5rem]"
+      >
         <DropdownMenuItem
           className="flex cursor-pointer items-center gap-2"
           onClick={() => setTheme("light")}

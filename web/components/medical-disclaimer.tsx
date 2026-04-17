@@ -8,7 +8,7 @@ export function MedicalDisclaimer({ className }: { className?: string }) {
     >
       <div className="flex gap-3">
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
-        <p>
+        <p className="min-w-0">
           <strong>Educational use only.</strong> This site shares general health
           information and community stories. It is not medical advice, diagnosis,
           or treatment. Always consult a qualified clinician for personal

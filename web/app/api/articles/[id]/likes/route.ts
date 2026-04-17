@@ -17,7 +17,12 @@ import { z } from "zod";
 const idSchema = z.string().uuid();
 
 function likersPayload(
-  likes: { authorEmail: string; authorName: string; createdAt: string }[]
+  likes: {
+    authorEmail: string;
+    authorName: string;
+    authorImageUrl: string;
+    createdAt: string;
+  }[]
 ) {
   const sorted = [...likes].sort((a, b) => {
     const an = (a.authorName || a.authorEmail).toLowerCase();
@@ -27,6 +32,7 @@ function likersPayload(
   return sorted.map((l) => ({
     authorEmail: l.authorEmail,
     authorName: l.authorName || l.authorEmail,
+    authorImageUrl: l.authorImageUrl ?? "",
     createdAt: l.createdAt,
   }));
 }
@@ -118,6 +124,7 @@ export async function POST(
         articleId,
         email,
         session.user.name ?? "",
+        (session.user.image ?? "").trim(),
       ]);
       if (!ok) {
         return NextResponse.json(
@@ -131,7 +138,7 @@ export async function POST(
     return NextResponse.json(
       {
         error:
-          "Could not update like. Ensure a tab named article_likes (or SHEETS_LIKES_TAB) exists with headers: id,createdAt,articleId,authorEmail,authorName.",
+          "Could not update like. Ensure a tab named article_likes (or SHEETS_LIKES_TAB) exists with headers: id,createdAt,articleId,authorEmail,authorName,authorImageUrl.",
       },
       { status: 502 }
     );

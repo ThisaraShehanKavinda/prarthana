@@ -94,7 +94,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
         <ClubPartnerLogos />
       </div>
-      <div className="border-t border-[var(--border)] py-6 text-center text-xs text-[var(--muted-foreground)]">
+      <div className="border-t border-[var(--border)] py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-center text-xs text-[var(--muted-foreground)]">
         <SiteBrandLockup variant="micro" />
         {" · "}
         <span>© {new Date().getFullYear()}</span>

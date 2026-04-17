@@ -47,7 +47,7 @@ export function NotificationsInbox() {
   if (status === "loading" || !session?.user) return null;
 
   return (
-    <DropdownMenu onOpenChange={(o) => o && void load()}>
+    <DropdownMenu modal={false} onOpenChange={(o) => o && void load()}>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
@@ -64,7 +64,13 @@ export function NotificationsInbox() {
           ) : null}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[min(100vw-2rem,22rem)] max-h-80 overflow-y-auto">
+      <DropdownMenuContent
+        align="center"
+        side="bottom"
+        sideOffset={8}
+        collisionPadding={16}
+        className="w-[min(100vw-2rem,22rem)] max-h-80 overflow-y-auto"
+      >
         <div className="px-2 py-1.5 text-xs font-semibold text-[var(--muted-foreground)]">
           Notifications
         </div>

@@ -6,6 +6,8 @@ export interface Article {
   updatedAt: string;
   authorEmail: string;
   authorName: string;
+  /** Profile photo URL captured when the post was saved (e.g. Google picture). */
+  authorImageUrl: string;
   title: string;
   slug: string;
   excerpt: string;
@@ -26,6 +28,8 @@ export interface Comment {
   articleId: string;
   authorEmail: string;
   authorName: string;
+  /** Profile photo URL when the comment was posted. */
+  authorImageUrl: string;
   body: string;
   visibility: CommentVisibility;
   /** Parent comment id for threading; empty = top-level. */
@@ -38,6 +42,8 @@ export interface ArticleLike {
   articleId: string;
   authorEmail: string;
   authorName: string;
+  /** Profile photo URL when the like was recorded. */
+  authorImageUrl: string;
 }
 
 export type NotificationType =

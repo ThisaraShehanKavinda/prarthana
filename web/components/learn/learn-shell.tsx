@@ -14,7 +14,7 @@ export function LearnShell({
   crumbs?: { href: string; label: string }[];
 }) {
   return (
-    <div className="relative mx-auto max-w-3xl px-3 py-8 sm:px-6 sm:py-12 lg:max-w-4xl lg:px-8">
+    <div className="relative mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-4xl xl:max-w-5xl lg:px-8">
       <div
         className="pointer-events-none absolute inset-x-0 -top-24 h-64 bg-gradient-to-b from-[var(--primary)]/[0.07] to-transparent blur-2xl"
         aria-hidden
@@ -59,7 +59,7 @@ export function LearnShell({
           {kicker}
         </p>
       )}
-      <h1 className="relative mb-6 text-4xl font-bold tracking-tight text-[var(--foreground)]">
+      <h1 className="relative mb-6 text-balance text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-[2.5rem] lg:leading-tight">
         {title}
         <span
           className="mt-4 block h-1 w-20 rounded-full bg-gradient-to-r from-[var(--primary)] via-[var(--primary)]/70 to-transparent"

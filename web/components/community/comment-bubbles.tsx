@@ -14,6 +14,7 @@ import type { Comment } from "@/lib/types";
 import { confirmDestructive, notify } from "@/lib/notify";
 import { cn } from "@/lib/utils";
 import { ReportContentDialog } from "@/components/community/report-content-dialog";
+import { AuthorAvatar } from "@/components/community/author-avatar";
 
 function emEq(a: string, b: string) {
   return a.toLowerCase() === b.toLowerCase();
@@ -149,11 +150,20 @@ export function CommentBubbles({
       >
         <div
           className={cn(
-            "flex w-full list-none",
+            "flex w-full list-none items-start gap-2",
             mine ? "justify-end" : "justify-start",
             isHidden && "prarthana-comment-hidden-in"
           )}
         >
+          {!mine ? (
+            <AuthorAvatar
+              imageUrl={c.authorImageUrl}
+              name={c.authorName}
+              email={c.authorEmail}
+              size="sm"
+              className="mt-0.5"
+            />
+          ) : null}
           <div
             className={cn(
               "relative max-w-[min(100%,20rem)] rounded-3xl px-3.5 py-2.5 sm:max-w-md",
@@ -313,6 +323,15 @@ export function CommentBubbles({
               {c.body}
             </p>
           </div>
+          {mine ? (
+            <AuthorAvatar
+              imageUrl={c.authorImageUrl}
+              name={c.authorName}
+              email={c.authorEmail}
+              size="sm"
+              className="mt-0.5"
+            />
+          ) : null}
         </div>
         {replies.length > 0 && depth < 8 ? (
           <ul className="mt-2 space-y-0 p-0">

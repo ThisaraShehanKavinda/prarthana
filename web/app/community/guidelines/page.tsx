@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function CommunityGuidelinesPage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <div className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6 lg:max-w-3xl lg:px-8">
       <p className="text-sm text-[var(--muted-foreground)]">
         <Link href="/community" className="font-medium text-[var(--primary)] hover:underline">
           ← Community

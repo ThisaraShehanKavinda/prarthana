@@ -21,7 +21,7 @@ export default async function ModReportsPage() {
   const slugByArticleId = new Map(articles.map((a) => [a.id, a.slug]));
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <div className="mx-auto w-full max-w-lg px-4 py-10 sm:max-w-xl sm:px-6 lg:max-w-2xl xl:max-w-5xl lg:px-8">
       <p className="text-sm text-[var(--muted-foreground)]">
         <Link href="/community" className="text-[var(--primary)] hover:underline">
           ← Community

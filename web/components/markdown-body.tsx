@@ -6,7 +6,7 @@ import rehypeSanitize from "rehype-sanitize";
 
 export function MarkdownBody({ source }: { source: string }) {
   return (
-    <div className="markdown-body max-w-none text-[var(--foreground)]/90">
+    <div className="markdown-body min-w-0 max-w-none text-[var(--foreground)]/90">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}

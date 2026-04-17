@@ -3,12 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { signIn, useSession } from "next-auth/react";
-import { toast } from "sonner";
+import { notify } from "@/lib/notify";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Heart } from "lucide-react";
+import { AuthorAvatar } from "@/components/community/author-avatar";
 
-type Liker = { authorEmail: string; authorName: string; createdAt: string };
+type Liker = {
+  authorEmail: string;
+  authorName: string;
+  authorImageUrl?: string;
+  createdAt: string;
+};
 
 export function LikeToggle({
   articleId,
@@ -111,7 +117,7 @@ export function LikeToggle({
       if (!r.ok) {
         setLiked(prev.liked);
         setCount(prev.count);
-        toast.error(typeof j.error === "string" ? j.error : "Couldn’t update like");
+        notify.error(typeof j.error === "string" ? j.error : "Couldn’t update like");
         return;
       }
       if (typeof j.count === "number") setCount(j.count);
@@ -120,7 +126,7 @@ export function LikeToggle({
     } catch {
       setLiked(prev.liked);
       setCount(prev.count);
-      toast.error("Couldn’t update like");
+      notify.error("Couldn’t update like");
     } finally {
       setBusy(false);
     }
@@ -198,10 +204,19 @@ export function LikeToggle({
             <p className="mb-1.5 border-b border-[var(--border)] pb-1 text-xs font-semibold text-[var(--foreground)]">
               {listLabel}
             </p>
-            <ul className="space-y-1 text-sm">
+            <ul className="space-y-2 text-sm">
               {likers.map((p) => (
-                <li key={p.authorEmail} className="truncate text-[var(--foreground)]">
-                  {p.authorName}
+                <li
+                  key={p.authorEmail}
+                  className="flex min-w-0 items-center gap-2 text-[var(--foreground)]"
+                >
+                  <AuthorAvatar
+                    imageUrl={p.authorImageUrl}
+                    name={p.authorName}
+                    email={p.authorEmail}
+                    size="sm"
+                  />
+                  <span className="min-w-0 flex-1 truncate">{p.authorName}</span>
                 </li>
               ))}
             </ul>

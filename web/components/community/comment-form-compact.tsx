@@ -2,11 +2,19 @@
 
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
+import { AppNotice } from "@/components/ui/app-notice";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { notify } from "@/lib/notify";
+import { CommentTextareaWithMentions } from "@/components/community/comment-textarea-with-mentions";
+import type { MentionCandidate } from "@/lib/mention-candidates";
 
-export function CommentFormCompact({ articleId }: { articleId: string }) {
+export function CommentFormCompact({
+  articleId,
+  mentionCandidates = [],
+}: {
+  articleId: string;
+  mentionCandidates?: MentionCandidate[];
+}) {
   const { data: session, status } = useSession();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -61,29 +69,36 @@ export function CommentFormCompact({ articleId }: { articleId: string }) {
     <>
       <form
         onSubmit={onSubmit}
-        className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center"
+        className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-end"
         onClick={(e) => e.stopPropagation()}
       >
-        <Input
-          placeholder="Write a comment…"
+        <CommentTextareaWithMentions
+          id={`compact-comment-${articleId}`}
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onChange={setBody}
+          mentionCandidates={mentionCandidates}
           maxLength={2000}
-          className="min-h-10 min-w-0 w-full flex-1 rounded-full border-[var(--border)] bg-[var(--muted)]/40 text-sm"
+          rows={2}
+          disabled={loading}
+          placeholder="Write a comment… Type @ for names"
+          wrapperClassName="min-w-0 w-full flex-1 sm:max-w-none"
+          className="min-h-[2.75rem] resize-none rounded-2xl border-[var(--border)] bg-[var(--muted)]/40 text-sm sm:min-h-[2.5rem]"
         />
         <Button
           type="submit"
           size="sm"
-          className="h-10 w-full shrink-0 rounded-full sm:h-9 sm:w-auto sm:rounded-lg"
+          className="h-10 w-full shrink-0 self-end rounded-full sm:ml-auto sm:h-9 sm:w-auto sm:rounded-lg"
           disabled={loading || body.trim().length < 2}
         >
           {loading ? "…" : "Post"}
         </Button>
       </form>
       {error ? (
-        <p className="mt-1 text-xs text-red-500" role="alert">
-          {error}
-        </p>
+        <div className="mt-2">
+          <AppNotice variant="error" compact>
+            {error}
+          </AppNotice>
+        </div>
       ) : null}
     </>
   );

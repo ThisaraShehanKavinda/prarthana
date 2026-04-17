@@ -66,12 +66,14 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), var(--font-sinhala), system-ui, sans-serif;
+  min-width: 0;
 }
 
 .font-sinhala {
@@ -91,6 +93,11 @@ body {
     linear-gradient(180deg, #faf9fc 0%, #efefef 55%, #ffffff 100%);
 }
 
+.markdown-body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {
@@ -102,18 +109,46 @@ body {
 .markdown-body h2 {
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .markdown-body h2 {
+    font-size: 1.375rem;
+  }
 }
 
 .markdown-body h3 {
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
+}
+
+@media (min-width: 640px) {
+  .markdown-body h3 {
+    font-size: 1.125rem;
+  }
 }
 
 .markdown-body p {
   margin-bottom: 0.75rem;
   line-height: 1.7;
+}
+
+.markdown-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.markdown-body img,
+.markdown-body video {
+  max-width: 100%;
+  height: auto;
 }
 
 .markdown-body ul {
@@ -160,30 +195,6 @@ body {
     radial-gradient(ellipse 65% 45% at 100% 0%, rgba(127, 184, 124, 0.12), transparent),
     radial-gradient(ellipse 55% 40% at 0% 0%, rgba(45, 40, 56, 0.6), transparent),
     linear-gradient(180deg, #1a1d26 0%, #22262f 50%, #1a1d26 100%);
-}
-
-/* Sonner: pin toast stack to viewport center (overrides corner positioning). */
-ol[data-sonner-toaster].prarthana-sonner-center {
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translate(-50%, -50%) !important;
-  width: min(100vw - 1.5rem, 26rem) !important;
-  max-width: calc(100vw - 1.5rem) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-}
-
-ol[data-sonner-toaster].prarthana-sonner-center [data-sonner-toast] {
-  width: 100% !important;
-}
-
-@media (hover: none) and (pointer: coarse) {
-  ol[data-sonner-toaster].prarthana-sonner-center[data-lifted="true"] {
-    transform: translate(-50%, -50%) !important;
-  }
 }
 
 /* Hidden comments: fade in (light grey bubbles — see comment-bubbles.tsx) */

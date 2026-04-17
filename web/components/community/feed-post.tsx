@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -13,16 +14,11 @@ import { CommentFormCompact } from "@/components/community/comment-form-compact"
 import { CommentBubbles } from "@/components/community/comment-bubbles";
 import { PostOverflowMenu } from "@/components/community/post-overflow-menu";
 import { topicLabelForId } from "@/lib/community-topic-tags";
+import { articleStatusDisplayLabel } from "@/lib/article-status-label";
 import { useCommunityVisitBaseline } from "@/components/community/community-visit-provider";
 import { cn } from "@/lib/utils";
-
-function initials(name: string | null | undefined, email: string) {
-  const n = (name || email || "?").trim();
-  const parts = n.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2)
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase().slice(0, 2);
-  return n.slice(0, 2).toUpperCase();
-}
+import { buildMentionCandidates } from "@/lib/mention-candidates";
+import { AuthorAvatar } from "@/components/community/author-avatar";
 
 function timeAgo(iso: string) {
   const t = new Date(iso).getTime();
@@ -54,8 +50,29 @@ export function FeedPost({
   listIndex?: number;
   viewerIsEditor?: boolean;
 }) {
+  const { data: session } = useSession();
   const reduce = useReducedMotion();
   const visit = useCommunityVisitBaseline();
+  const mentionCandidates = useMemo(
+    () =>
+      buildMentionCandidates(
+        {
+          authorEmail: article.authorEmail,
+          authorName: article.authorName,
+          authorImageUrl: article.authorImageUrl,
+        },
+        comments,
+        session?.user?.email ?? currentUserEmail
+      ),
+    [
+      article.authorEmail,
+      article.authorName,
+      article.authorImageUrl,
+      comments,
+      session?.user?.email,
+      currentUserEmail,
+    ]
+  );
   const isNewSinceLastVisit = Boolean(
     visit?.ready &&
       visit.baselineIso &&
@@ -89,18 +106,18 @@ export function FeedPost({
           : { duration: 0.2 }
       }
       className={cn(
-        "overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm",
+        "min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm",
         "transition-[border-color,box-shadow] duration-300 hover:border-[var(--primary)]/20 hover:shadow-md hover:shadow-[var(--foreground)]/[0.04]"
       )}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex gap-3 p-4 pb-3">
-        <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--primary)]/15 text-sm font-bold text-[var(--primary)]"
-          aria-hidden
-        >
-          {initials(article.authorName, article.authorEmail)}
-        </div>
+        <AuthorAvatar
+          imageUrl={article.authorImageUrl}
+          name={article.authorName}
+          email={article.authorEmail}
+          size="md"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-1.5 sm:gap-2">
             <div className="min-w-0">
@@ -111,7 +128,7 @@ export function FeedPost({
                 </span>
                 {article.status === "pending" && (
                   <Badge variant="secondary" className="text-[10px]">
-                    Pending
+                    {articleStatusDisplayLabel("pending")}
                   </Badge>
                 )}
                 {isNewSinceLastVisit && (
@@ -225,7 +242,10 @@ export function FeedPost({
       )}
 
       <div className="border-t border-[var(--border)] p-2 sm:p-3">
-        <CommentFormCompact articleId={article.id} />
+        <CommentFormCompact
+          articleId={article.id}
+          mentionCandidates={mentionCandidates}
+        />
       </div>
     </motion.article>
   );

@@ -16,7 +16,7 @@ export function TreatmentMixBar({
   data: { name: string; value: number }[];
 }) {
   return (
-    <div className="h-[300px] w-full min-w-0 min-h-[280px]">
+    <div className="h-[240px] w-full min-w-0 min-h-[220px] sm:h-[280px] sm:min-h-[250px] lg:h-[300px] lg:min-h-[280px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" className="stroke-[var(--border)]" />

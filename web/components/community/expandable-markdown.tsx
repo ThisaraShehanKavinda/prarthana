@@ -20,13 +20,17 @@ export function ExpandableMarkdown({
   const [open, setOpen] = useState(false);
 
   if (!needsMore) {
-    return <MarkdownBody source={source} />;
+    return (
+      <div className="min-w-0">
+        <MarkdownBody source={source} />
+      </div>
+    );
   }
 
   if (!open) {
     return (
-      <div className="space-y-2">
-        <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--foreground)]/90">
+      <div className="min-w-0 space-y-2">
+        <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-[var(--foreground)]/90">
           {preview}
         </p>
         <Button
@@ -47,7 +51,7 @@ export function ExpandableMarkdown({
   }
 
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-2">
       <MarkdownBody source={source} />
       <Button
         type="button"

@@ -115,6 +115,7 @@ export async function POST(req: Request) {
     text,
     "public",
     parentId,
+    (session.user.image ?? "").trim(),
   ];
 
   try {
