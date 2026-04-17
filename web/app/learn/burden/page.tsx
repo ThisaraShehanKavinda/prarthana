@@ -62,7 +62,7 @@ export default function BurdenPage() {
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
             Open each topic for simple explanations of incidence, mortality, and survival.
-            Use this page to learn concepts, not to predict one person's risk.
+            Use this page to learn concepts, not to predict personal risk.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {burdenDeepDive.map((item) => (
@@ -118,7 +118,7 @@ export default function BurdenPage() {
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
             This pie chart is simplified for learning. For formal use, check your
-            country's cancer registry data. Hover segments to see values.
+            national cancer registry data. Hover segments to see values.
           </p>
           <dl className="mt-6 space-y-3 text-sm">
             <div className="flex justify-between gap-4 border-b border-[var(--border)] py-2">
