@@ -15,75 +15,75 @@ export const medicineClassesRich: MedicineClassRich[] = [
     icon: Syringe,
     title: "Cytotoxic chemotherapy",
     mechanism:
-      "Alkylators cross-link DNA; antimetabolites mimic building blocks; topoisomerase inhibitors trap DNA during unwinding; taxanes freeze microtubules—each class exploits replication stress.",
+      "These drugs damage cancer cells in different ways, such as harming DNA or blocking cell division.",
     examplesNote:
       "Brand names differ by country; regimens are protocol-driven (FOLFOX, AC-T, R-CHOP, etc.).",
     bullets: [
-      "Cell-cycle specificity matters: some drugs work best in S phase, others are non-specific.",
-      "Rescue strategies (e.g., folinic acid after high-dose methotrexate) are protocolized, not optional add-ons.",
-      "Extravasation protocols exist for vesicant agents—nurses monitor infusion sites closely.",
+      "Some drugs work best at specific stages of cell growth.",
+      "Support steps around treatment are planned parts of safe care.",
+      "Nurses watch IV sites carefully to prevent tissue injury.",
     ],
     cautions: [
-      "Never borrow someone else’s cycle or tablet dose; toxicity scales nonlinearly with exposure.",
+      "Never use someone else's medicine plan. Dosing is individual and safety-critical.",
     ],
   },
   {
     icon: Target,
     title: "Targeted antibodies & small molecules",
     mechanism:
-      "Monoclonal antibodies bind cell-surface targets for immune-mediated killing or blockade; small molecules enter cells to inhibit kinases or epigenetic regulators.",
+      "These medicines target specific proteins or signals that cancer cells depend on.",
     examplesNote:
       "HER2 antibodies, anti-VEGF agents, CD20 antibodies, and oral TKIs each carry distinct monitoring (echo, BP, infection risk).",
     bullets: [
-      "Antibody–drug conjugates deliver chemotherapy payloads to cells expressing a surface antigen.",
-      "Bispecific antibodies engage two epitopes simultaneously—novel but resource-intensive to administer.",
+      "Some antibody drugs carry chemotherapy directly to target cells.",
+      "Newer designs can bind more than one target at a time.",
     ],
     cautions: [
-      "QT prolongation, liver enzymes, or interstitial lung disease may appear on labs before symptoms—keep scheduled blood draws.",
+      "Lab tests are important because side effects may appear before symptoms.",
     ],
   },
   {
     icon: Pill,
     title: "Endocrine therapies",
     mechanism:
-      "Estrogen or androgen receptor–positive tumors may depend on hormone signaling; SERMs, aromatase inhibitors, and anti-androgens blockade different nodes in those pathways.",
+      "These drugs lower or block hormone signals that some cancers need to grow.",
     examplesNote:
       "Ovarian suppression plus AI is used in some premenopausal breast cancer algorithms.",
     bullets: [
-      "Bone density monitoring matters because estrogen deprivation accelerates trabecular loss.",
-      "Hot flashes and joint aches are common—supportive care quality affects adherence.",
+      "Bone health checks are often needed during long treatment.",
+      "Hot flashes and joint pain are common and should be managed early.",
     ],
     cautions: [
-      "Pregnancy is contraindicated on teratogenic endocrine drugs even if periods resume.",
+      "Some endocrine drugs are unsafe in pregnancy. Discuss contraception with your care team.",
     ],
   },
   {
     icon: Flame,
     title: "Immune checkpoint inhibitors",
     mechanism:
-      "PD-1, PD-L1, or CTLA-4 blockade reactivates exhausted T cells against tumors expressing neoantigens—most effective when immune infiltrate or MSI-high mutational burden is present.",
+      "These drugs release immune brakes so T cells can attack cancer.",
     examplesNote:
       "Dual checkpoint combinations increase efficacy and toxicity—hospitalization rates for colitis or hepatitis are higher.",
     bullets: [
-      "Steroids are first-line for many immune-related adverse events; infliximab may be used for steroid-refractory colitis under specialist care.",
-      "Endocrine irAEs (hypophysitis, thyroiditis) may require lifelong hormone replacement after recovery.",
+      "Doctors often use steroids to treat immune side effects.",
+      "Some hormone-gland side effects can last long term.",
     ],
     cautions: [
-      "Live vaccines are generally avoided during active immunotherapy—ask your team before travel vaccines.",
+      "Always ask before vaccines or new medicines during active treatment.",
     ],
   },
   {
     icon: Dna,
     title: "Antibody–drug conjugates & radiopharmaceuticals",
     mechanism:
-      "ADCs tether a cytotoxic payload to a tumor-selective antibody; radiopharmaceuticals (e.g., some prostate therapies) deliver beta particles to bone-metastatic sites expressing surface markers.",
+      "These treatments deliver toxic payloads or radiation more directly to cancer targets.",
     examplesNote:
       "Both classes require nuclear medicine or specialized pharmacy workflows.",
     bullets: [
-      "Myelosuppression and mucosal toxicity depend on payload potency and antigen expression in marrow.",
+      "Blood count changes can happen and need monitoring.",
     ],
     cautions: [
-      "Radiation safety instructions after systemic radionuclides include brief contact precautions for caregivers.",
+      "Follow radiation-safety advice carefully after radiopharmaceutical treatment.",
     ],
   },
 ];
@@ -97,22 +97,22 @@ export const medicineConcepts: {
     id: "adme",
     title: "Absorption, metabolism, excretion—why “same drug” feels different",
     body: [
-      "Kidney and liver function, food effects, and drug–drug interactions (CYP enzymes, transporters) change exposure.",
-      "Pharmacogenomics (e.g., DPYD for some fluoropyrimidines) is entering routine care in some centers to avoid catastrophic toxicity.",
+      "Kidney/liver function, food, and drug interactions can change how strongly a medicine affects you.",
+      "In some settings, gene tests are used to lower the risk of severe side effects.",
     ],
   },
   {
     id: "biosimilars",
     title: "Biosimilars vs generics",
     body: [
-      "Small-molecule generics are identical in active ingredient; biologics are large proteins manufactured in living cells, so “highly similar” biosimilars require extrapolated indications with switching studies.",
+      "Generics are copies of small-molecule drugs. Biosimilars are very close versions of biologic drugs made in living cells.",
     ],
   },
   {
     id: "trials",
     title: "Expanded access vs clinical trial",
     body: [
-      "Compassionate use pathways exist when no trial fits but regulators and sponsors agree; they are not shortcuts around safety monitoring.",
+      "Compassionate use may be possible when no trial fits, but safety checks are still required.",
     ],
   },
 ];

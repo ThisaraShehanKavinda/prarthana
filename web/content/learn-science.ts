@@ -10,40 +10,40 @@ export const scienceModulesRich: {
     id: "dna",
     title: "DNA damage, repair, and genome instability",
     lead:
-      "Cancer genomes are messy: point mutations, indels, copy-number changes, and chromothripsis accumulate when repair pathways (TP53, BRCA-related HR, mismatch repair) fail or are overwhelmed.",
+      "Cancer cells collect many DNA changes when repair systems do not work well.",
     bullets: [
-      "Oncogenes gain function (e.g., constitutive kinase signaling); tumor suppressors lose brakes (two-hit hypothesis still teaches the logic).",
-      "Microsatellite instability (MSI) from mismatch repair deficiency creates hypermutated tumors that neoantigen-load the immune system—biologically and therapeutically important.",
+      "Some genes become overactive (oncogenes), while others lose their protective role (tumor suppressors).",
+      "MSI-high tumors have many mutations and can respond differently to some treatments.",
     ],
   },
   {
     id: "hallmarks",
     title: "Hallmarks of cancer (conceptual scaffold)",
     lead:
-      "Hanahan & Weinberg’s framework groups capabilities—sustaining proliferation, resisting cell death, angiogenesis, invasion/metastasis, metabolic reprogramming, immune evasion—so textbooks can explain why tumors are ecosystems, not clones in isolation.",
+      "The hallmarks model groups common cancer abilities, such as fast growth, spread, and immune escape.",
     bullets: [
-      "Emerging hallmarks include unlocking phenotypic plasticity and senescent cells influencing the microenvironment.",
-      "Therapies often attack one hallmark while selecting for compensatory pathways—combination trials try to close escape routes.",
+      "The model keeps evolving as science finds new patterns.",
+      "One treatment may block one pathway while others stay active, so combinations are often tested.",
     ],
   },
   {
     id: "staging",
     title: "Staging, grading, and biomarkers",
     lead:
-      "TNM staging summarizes anatomic extent; grade reflects differentiation; biomarkers (ER/PR, HER2, PD-L1, EGFR mutations) refine prognosis and drug matching.",
+      "Stage shows spread, grade shows cell appearance, and biomarkers help match treatments.",
     bullets: [
-      "Liquid biopsy detects circulating tumor DNA—useful when tissue is scarce or to track resistance dynamics, with false-negative caveats at very low burden.",
-      "AJCC editions update staging rules as data mature; always cite the edition used in a chart.",
+      "Liquid biopsy can detect tumor DNA in blood in some situations.",
+      "Staging systems are updated over time, so edition and date matter.",
     ],
   },
   {
     id: "therapy-maps",
     title: "How therapies map onto cell biology",
     lead:
-      "DNA-damaging agents and radiation exploit repair defects; targeted drugs choke addicted pathways; immunotherapy removes brakes so T cells recognize neoantigens presented on MHC.",
+      "Treatments work by targeting weak points in cancer biology, such as DNA repair, growth signals, or immune checkpoints.",
     bullets: [
-      "Antibody-dependent cellular phagocytosis (ADCP) and complement contribute to therapeutic antibody effects beyond simple receptor blockade.",
-      "Synthetic lethality (PARP inhibitors in BRCA-deficient cells) is a proof that genetics guides drug design.",
+      "Therapeutic antibodies can do more than block one receptor.",
+      "PARP inhibitors in BRCA-related cancers are a clear example of genetics guiding therapy.",
     ],
   },
 ];
@@ -57,24 +57,24 @@ export const scienceDeepDive: {
     id: "clonal",
     title: "Clonal evolution: why cancers change mid-treatment",
     body: [
-      "Tumors are polyclonal; therapy removes sensitive clones and leaves resistant ones room to expand—serial sampling sometimes shows branching evolution trees.",
-      "This is why ‘repeat biomarker testing’ is standard in advanced lung cancer or colorectal cancer after progression.",
+      "Cancer is made of mixed cell groups. Treatment may kill some groups but leave resistant ones.",
+      "That is why repeat biomarker testing is often needed when advanced cancer progresses.",
     ],
   },
   {
     id: "micro",
     title: "Tumor microenvironment: not just filler tissue",
     body: [
-      "Cancer-associated fibroblasts, myeloid cells, extracellular matrix stiffness, and hypoxia all influence drug penetration and immune infiltration.",
-      "Anti-angiogenic drugs normalize chaotic vessels briefly, which can paradoxically improve chemotherapy delivery in some windows.",
+      "Cells and structures around the tumor can affect drug delivery and immune response.",
+      "Some drugs briefly improve blood-vessel function and may help other treatments work better.",
     ],
   },
   {
     id: "model",
     title: "From dish to mouse to human: limits of models",
     body: [
-      "Cell lines drift genetically; patient-derived xenografts are expensive; organoids bridge some gaps but lack full immune context unless humanized.",
-      "Negative trial results still advance science by ruling out hypotheses—media often underreports those lessons.",
+      "Lab models are useful but never perfect copies of real patients.",
+      "Even negative trials are valuable because they show what does not work.",
     ],
   },
 ];

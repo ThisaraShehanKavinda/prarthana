@@ -26,12 +26,8 @@ export default function MythsPage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Misinformation spreads fastest when people are scared, sleep-deprived, or
-            navigating paywalls to real oncology visits. This page collects{" "}
-            <strong className="text-[var(--foreground)]">common viral claims</strong>{" "}
-            and pairs each with a concise, evidence-aligned rebuttal plus a link to a
-            government agency, cancer institute, or major journal review—not random
-            blogs.
+            Cancer myths spread quickly, especially when people are worried. This page
+            lists common claims and gives a simple fact with a trusted source link.
           </p>
           <blockquote className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-[var(--foreground)]/95">
             <Quote className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-400" aria-hidden />
@@ -50,8 +46,7 @@ export default function MythsPage() {
             Tap a myth to reveal the fact pattern
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            Accordions keep the page scannable: open the myths that match what you
-            heard in a chat group, then follow the outbound link for depth.
+            Open only the myths you need, then follow the source link for more detail.
           </p>
         </LearnHoverPanel>
       </FadeIn>

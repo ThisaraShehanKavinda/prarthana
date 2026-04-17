@@ -32,22 +32,10 @@ export default function AgePage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Cancer is not one disease—it is hundreds of diseases whose incidence curves
-            bend with age because of different cell lineages, exposure timelines, and
-            host biology.{" "}
-            <strong className="text-[var(--foreground)]">
-              Pediatric leukemias and embryonal tumors
-            </strong>{" "}
-            cluster differently from{" "}
-            <strong className="text-[var(--foreground)]">
-              carcinomas that surge after middle age
-            </strong>
-            , while{" "}
-            <strong className="text-[var(--foreground)]">
-              geriatric oncology
-            </strong>{" "}
-            asks how chronologic age, frailty, and polypharmacy change the benefit–risk
-            of aggressive therapy.
+            Cancer patterns change with age. Some cancers are more common in children,
+            others increase in middle or older age. Age also affects treatment choices,
+            because strength, other illnesses, and daily function can differ from person
+            to person.
           </p>
           <blockquote className="flex gap-3 rounded-xl border border-[var(--accent-green)]/35 bg-[var(--accent-green)]/10 px-4 py-3 text-[var(--foreground)]/95">
             <Quote className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]" aria-hidden />
@@ -66,8 +54,8 @@ export default function AgePage() {
             Life-course lens: tap to explore
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            These panels connect epidemiology to survivorship—why pediatric protocols,
-            AYA navigation, and geriatric assessment exist as distinct subspecialties.
+            These panels explain why childhood, young-adult, and older-adult oncology
+            care are often managed in different ways.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {ageLifeCourse.map((item) => (

@@ -9,32 +9,32 @@ export const burdenDeepDive: {
     id: "incidence-mortality",
     title: "Incidence, mortality, and survival are different stories",
     body: [
-      "Incidence counts new diagnoses in a period. Mortality counts deaths. A cancer can be highly incident but less often fatal if screening catches it early (some thyroid cancers), or less common but disproportionately lethal if diagnosed late (many pancreatic cancers).",
-      "Population survival statistics blend stage at diagnosis, treatment access, comorbidities, and reporting quality—never a personal forecast.",
+      "Incidence means how many new cases are found. Mortality means how many people die. These are not the same thing.",
+      "Some cancers are common but often treatable when found early. Some are less common but more deadly if found late. Survival numbers describe groups, not one person.",
     ],
   },
   {
     id: "one-number",
     title: "Why “cancer burden” is never one headline number",
     body: [
-      "Tumor types differ in biology, age distribution, and preventability. Tobacco-related lung cancer and HPV-related cervical cancer respond to different public health levers than rare sarcomas.",
-      "Age-standardized rates let regions with different population pyramids be compared fairly—raw counts alone can mislead policymakers.",
+      "Cancer is not one disease. Different cancer types have different causes, age patterns, and prevention options.",
+      "Raw case counts can mislead. Age-standardized rates help compare countries more fairly when their populations are different ages.",
     ],
   },
   {
     id: "prevention",
     title: "What actually moves the curve at population scale",
     body: [
-      "Vaccination (HPV, hepatitis B), tobacco control, alcohol moderation, occupational safety, and air quality improvements have strong epidemiologic track records for specific cancers.",
-      "Screening reduces mortality only when uptake is high, follow-up is reliable, and overdiagnosis trade-offs are managed—otherwise benefits shrink.",
+      "Strong public health actions include HPV and hepatitis B vaccines, tobacco control, safer workplaces, cleaner air, and lower harmful alcohol use.",
+      "Screening helps most when many people attend, follow-up is done quickly, and programs are run well.",
     ],
   },
   {
     id: "literacy",
     title: "Reading charts without panic or false reassurance",
     body: [
-      "Illustrative charts teach concepts; they should not replace national cancer registry tables for research citations.",
-      "If a statistic lacks a year, geography, age band, and numerator/denominator definition, treat it as incomplete.",
+      "Charts on this page are for learning. Use national registry data for formal reports and research.",
+      "If a number has no year, country, age group, or clear definition, it is incomplete.",
     ],
   },
 ];

@@ -26,14 +26,9 @@ export default function MedicinesPage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Anticancer drugs are grouped by{" "}
-            <strong className="text-[var(--foreground)]">how they perturb biology</strong>
-            —DNA damage, microtubule arrest, kinase inhibition, immune checkpoint
-            blockade, hormone deprivation, or targeted delivery of payloads. This page
-            explains <strong className="text-[var(--foreground)]">categories</strong>{" "}
-            so you can decode consent forms and pharmacy counseling; it does{" "}
-            <strong className="text-[var(--foreground)]">not</strong> provide dosing,
-            brand substitution, or personal treatment recommendations.
+            This page explains cancer medicine groups in simple terms, so consent forms
+            and pharmacy advice are easier to understand. It is educational and does not
+            provide personal dosing advice.
           </p>
           <p className="text-sm leading-relaxed sm:text-base">
             Always cross-check lay summaries with the medication guide your team
@@ -49,9 +44,8 @@ export default function MedicinesPage() {
             Pharmacology concepts — interactive
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            These topics explain why the same pill can feel different across patients,
-            and why pharmacists ask about grapefruit, St. John’s wort, or other
-            prescriptions.
+            These topics explain why the same medicine can affect people differently
+            and why drug-interaction checks are important.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {medicineConcepts.map((item) => (

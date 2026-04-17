@@ -42,13 +42,9 @@ export default function TypesIndexPage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Oncologists classify cancers by{" "}
-            <strong className="text-[var(--foreground)]">cell of origin</strong> and{" "}
-            <strong className="text-[var(--foreground)]">lineage</strong>—because
-            adenocarcinoma of the lung, squamous carcinoma of the lung, and small-cell
-            carcinoma are treated differently even when imaging looks “like a lung
-            mass.” Pathology, immunohistochemistry, and sometimes sequencing turn a
-            biopsy into a map for staging workup and therapy.
+            Doctors group cancers by where they start and what cell type they come from.
+            Even in the same organ, different cancer types can need different treatment.
+            Biopsy and lab tests help identify the exact type before planning care.
           </p>
           <blockquote className="flex gap-3 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary)]/[0.06] px-4 py-3 text-[var(--foreground)]/95">
             <Quote className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]" aria-hidden />
@@ -67,9 +63,8 @@ export default function TypesIndexPage() {
             Taxonomy primer — tap to unpack
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            Before you open a category card, these notes explain why the same organ
-            can host different cancer families—and why metastatic workup still asks
-            “where did this start?”
+            Read this primer first to understand lineage, stage, and why the original
+            site of cancer still matters after spread.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {typesTaxonomy.map((item) => (
@@ -99,8 +94,7 @@ export default function TypesIndexPage() {
           Choose a category — each opens a deeper page
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-          Cards lift on hover; inside each module you will find interactive sections
-          plus the core explainer for that family of cancers.
+          Open any card to read a simple overview, then expand deeper points in each section.
         </p>
       </FadeIn>
 

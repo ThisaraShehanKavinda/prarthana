@@ -65,6 +65,9 @@ export default async function TypeDetailPage({
               <Sparkles className="h-5 w-5 text-[var(--primary)]" aria-hidden />
               Explore further — tap a topic
             </h2>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
+              These short notes explain common questions for this cancer family in plain language.
+            </p>
             <Accordion type="single" collapsible className="mt-4 w-full">
               {extra.accordion.map((item) => (
                 <AccordionItem key={item.id} value={item.id}>

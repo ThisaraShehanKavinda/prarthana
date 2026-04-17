@@ -8,127 +8,127 @@ export type TypeExtra = {
 export const learnTypeExtras: Record<string, TypeExtra> = {
   carcinoma: {
     introHook:
-      "Carcinomas dominate cancer registries because epithelial tissues renew constantly and face carcinogens directly—skin, aerodigestive mucosa, breast ducts, prostate glands, and colonic crypts are all high-turnover interfaces.",
+      "Carcinomas are common because they start in lining tissues that renew often and are exposed to smoke, diet, infections, and other risks.",
     accordion: [
       {
         id: "precursor",
         title: "Precursor lesions and the adenoma–carcinoma sequence",
         body: [
-          "Many colorectal cancers pass through polyp stages detectable by endoscopy—why screening removes precancers, not only early invasive cancers.",
-          "Dysplasia grading in Barrett esophagus or cervical cytology communicates how close cells are to invasion.",
+          "Many bowel cancers start as polyps. Screening can find and remove these before they turn into cancer.",
+          "Pathology terms such as dysplasia help doctors estimate how close abnormal cells are to becoming invasive cancer.",
         ],
       },
       {
         id: "spread",
         title: "Lymphatic vs hematogenous spread",
         body: [
-          "Carcinomas often drain predictably to regional nodes first, which guides surgical templates and radiation fields.",
-          "Some subtypes (triple-negative breast, pancreatic ductal) show early micrometastatic biology even when imaging looks localized.",
+          "Carcinomas often spread to nearby lymph nodes first. This helps guide surgery and radiation plans.",
+          "Some subtypes can spread very early, even when scans still look limited.",
         ],
       },
     ],
   },
   sarcoma: {
     introHook:
-      "Sarcomas are rare enough that symptoms (a painless growing mass) are easy to dismiss—yet biopsy technique and referral to a sarcoma-experienced center materially affect limb salvage and survival.",
+      "Sarcomas are rare, so a painless growing lump can be ignored for too long. Early specialist review improves outcomes.",
     accordion: [
       {
         id: "biopsy",
         title: "Why incisional biopsy plans matter",
         body: [
-          "Violating the wrong tissue planes can seed compartments and compromise later limb-sparing surgery—core needle diagnosis is preferred when feasible.",
-          "Molecular translocations (e.g., EWSR1 fusions) refine subtype classification beyond light microscopy alone.",
+          "Biopsy path and technique matter because they can affect later surgery options.",
+          "Gene tests can help identify the exact sarcoma subtype, not just the basic microscope pattern.",
         ],
       },
       {
         id: "radiation",
         title: "Radiation timing with surgery",
         body: [
-          "Preoperative radiation may shrink high-grade extremity sarcomas but increases wound complications; teams weigh logistics and margin status.",
+          "Radiation before surgery may shrink some sarcomas but can raise wound-healing problems. Teams balance both risks and benefits.",
         ],
       },
     ],
   },
   leukemia: {
     introHook:
-      "Leukemias blur the line between ‘solid’ and ‘liquid’ disease because marrow is an organ you cannot see—symptoms reflect cytopenias and blast burden until flow cytometry classifies lineage.",
+      "Leukemia starts in blood-forming cells inside bone marrow, so symptoms often come from blood count changes rather than a visible lump.",
     accordion: [
       {
         id: "acute-chronic",
         title: "Acute vs chronic: speed and cell maturity",
         body: [
-          "Acute leukemias stack immature blasts quickly—often a medical emergency if counts are extreme.",
-          "Chronic leukemias may be monitored for years before therapy starts, guided by molecular response milestones.",
+          "Acute leukemia grows fast and may need urgent treatment.",
+          "Chronic leukemia can grow slowly, and some people are monitored before starting therapy.",
         ],
       },
       {
         id: "mrd",
         title: "Measurable residual disease (MRD)",
         body: [
-          "Flow or sequencing-based MRD negativity predicts relapse risk after induction—trials intensify or de-escalate therapy based on these thresholds.",
+          "MRD tests check for tiny amounts of disease after treatment. Results help estimate relapse risk and guide next steps.",
         ],
       },
     ],
   },
   lymphoma: {
     introHook:
-      "Lymphomas split broadly into Hodgkin and non-Hodgkin families, then subdivide by cell of origin (B vs T), genetics, and nodal vs extranodal presentation—PET-adapted therapy is common in curative regimens.",
+      "Lymphoma includes Hodgkin and non-Hodgkin groups, then many subtypes based on cell type and genetics.",
     accordion: [
       {
         id: "pet",
         title: "Deauville scores and PET-adapted trials",
         body: [
-          "Interim PET negativity can allow abbreviated chemotherapy in some Hodgkin trials; positivity triggers escalation pathways.",
-          "False positives occur with infection or inflammation—clinical correlation matters.",
+          "In some protocols, PET scan response during treatment helps decide whether to continue, reduce, or intensify therapy.",
+          "PET can also light up from infection or inflammation, so doctors read it with clinical context.",
         ],
       },
       {
         id: "rituximab",
         title: "CD20-targeted therapy revolutionized B-cell lymphomas",
         body: [
-          "R-CHOP and variants embed monoclonal antibodies into curative-intent regimens; resistance mechanisms include losing CD20 expression.",
+          "Anti-CD20 drugs (such as in R-CHOP) improved outcomes in many B-cell lymphomas, though resistance can still occur.",
         ],
       },
     ],
   },
   cns: {
     introHook:
-      "Primary CNS tumors challenge the classic TNM template because ‘metastasis’ inside the neuraxis is still local progression—integrated histomolecular diagnoses (WHO CNS5) now drive prognosis as much as grade alone.",
+      "Primary brain and spinal cord tumors follow different staging logic from many other cancers, and modern diagnosis combines microscope and molecular findings.",
     accordion: [
       {
         id: "bbb",
         title: "Blood–brain barrier and drug delivery",
         body: [
-          "Many small molecules do not penetrate adequately; neuro-oncology trials test pulsed low-intensity ultrasound, convection-enhanced delivery, or intrathecal routes.",
+          "The blood-brain barrier blocks many drugs, so delivery to the tumor can be difficult.",
         ],
       },
       {
         id: "rt",
         title: "Radiation sensitizers and cognition-sparing plans",
         body: [
-          "Proton therapy may spare cochlea or hypothalamus in pediatric medulloblastoma paths; hippocampal avoidance whole-brain RT is explored in select metastatic settings.",
+          "Teams try to protect memory and other key brain functions when planning radiation, especially in children.",
         ],
       },
     ],
   },
   childhood: {
     introHook:
-      "Childhood cancer biology often involves developmental pathways gone awry; survivors may spend more years living with late effects than with active disease—making survivorship clinics part of the cure.",
+      "In childhood cancer, long-term follow-up is part of treatment because survivors may live many years after cure.",
     accordion: [
       {
         id: "late-effects",
         title: "Cardiac, endocrine, and second malignancy surveillance",
         body: [
-          "Anthracyclines and chest RT elevate late cardiomyopathy risk; TSH and growth monitoring follow cranial RT.",
-          "Second cancers are rare but real—sun protection and smoking avoidance still matter after pediatric cure.",
+          "Some treatments can affect heart, hormone, or growth health later, so regular checks are important.",
+          "Second cancers are uncommon but possible, so healthy habits and follow-up still matter after cure.",
         ],
       },
       {
         id: "fertility",
         title: "Fertility and psychosocial anchors",
         body: [
-          "Ovarian tissue cryopreservation or sperm banking may be offered before gonadotoxic therapy when clinically appropriate.",
-          "School reintegration and peer support reduce dropout and isolation during maintenance phases.",
+          "Fertility-preservation options may be discussed before treatment when appropriate.",
+          "School return plans and peer support help children and teens stay connected during recovery.",
         ],
       },
     ],

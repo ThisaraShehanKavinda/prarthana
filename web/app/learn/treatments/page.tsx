@@ -29,14 +29,10 @@ export default function TreatmentsPage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Modern oncology mixes{" "}
-            <strong className="text-[var(--foreground)]">local therapies</strong>{" "}
-            (surgery, radiation) with{" "}
-            <strong className="text-[var(--foreground)]">systemic therapies</strong>{" "}
-            (chemotherapy, targeted drugs, immunotherapy, endocrine therapy, cellular
-            products). The sequence—neoadjuvant, definitive, adjuvant, maintenance, or
-            palliative—depends on tumor biology, stage, biomarkers, organ function, and
-            patient goals. Nothing here replaces your multidisciplinary note.
+            Cancer treatment often combines local care (surgery, radiation) with
+            whole-body medicines (chemotherapy, targeted therapy, immunotherapy, and
+            hormone treatment). The order depends on cancer type, stage, test results,
+            and patient goals.
           </p>
           <p className="text-sm leading-relaxed sm:text-base">
             The chart below is an{" "}
@@ -87,8 +83,7 @@ export default function TreatmentsPage() {
           Modalities in depth
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-          Each card summarizes mechanism, typical technical angles, and lived-experience
-          notes patients often discuss with nurses or navigators.
+          Each card explains what the treatment does, when it is used, and common practical notes.
         </p>
       </FadeIn>
 

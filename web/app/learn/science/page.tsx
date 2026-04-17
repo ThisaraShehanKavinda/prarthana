@@ -26,13 +26,8 @@ export default function SciencePage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Cancer biology is now a conversation between{" "}
-            <strong className="text-[var(--foreground)]">genome sequencing</strong>,{" "}
-            <strong className="text-[var(--foreground)]">single-cell atlases</strong>,{" "}
-            <strong className="text-[var(--foreground)]">immune profiling</strong>, and
-            bedside trials. These modules compress textbook themes—DNA repair
-            fidelity, hallmark capabilities, staging logic, and therapy mapping—into
-            readable anchors before you open a review paper.
+            This section explains key cancer science in plain language: DNA changes,
+            staging, biomarkers, and how treatments connect to biology.
           </p>
           <blockquote className="flex gap-3 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary)]/[0.06] px-4 py-3 text-[var(--foreground)]/95">
             <Quote className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]" aria-hidden />
@@ -90,8 +85,7 @@ export default function SciencePage() {
             Deeper mechanisms — tap to read
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            Evolutionary biology, microenvironment ecology, and model-system limits sit
-            underneath every trial headline.
+            These topics add context behind trial headlines and new treatment news.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {scienceDeepDive.map((item) => (

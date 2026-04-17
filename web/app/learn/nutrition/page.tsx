@@ -40,14 +40,12 @@ export default function NutritionPage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Cancer therapies save lives, but they also rewrite appetite, taste, gut
-            motility, and how your body uses protein.{" "}
+            Treatment can change appetite, taste, bowel habits, and body strength.{" "}
             <strong className="text-[var(--foreground)]">
-              Good nutrition does not replace oncology treatment
+              Food does not replace cancer treatment
             </strong>
-            —yet under‑nutrition is one of the few modifiable factors tied to worse
-            tolerance of chemotherapy, more complications, and slower recovery across
-            many tumor types.
+            , but good nutrition can help people tolerate treatment better and recover
+            faster.
           </p>
           <p className="leading-relaxed">
             Major cancer centers and guidelines (including work summarized by the{" "}
@@ -72,8 +70,7 @@ export default function NutritionPage() {
             <strong className="text-[var(--foreground)]">
               enough calories and protein, symptom control, and food safety
             </strong>{" "}
-            rather than rigid “clean eating” rules that are hard to follow when you
-            feel ill.
+            instead of strict diet rules that are hard to follow during treatment.
           </p>
           <blockquote className="flex gap-3 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary)]/[0.06] px-4 py-3 text-[var(--foreground)]/95">
             <Quote
@@ -95,9 +92,8 @@ export default function NutritionPage() {
             When eating feels impossible
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            Side effects are predictable enough that oncology dietitians keep
-            playbooks—yet your blood counts, medications, and culture matter. Use
-            these panels as conversation starters with your team, not prescriptions.
+            Side effects are common and manageable. Use these tips to discuss your
+            own plan with your care team.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {nutritionWhenEatingIsHard.map((item) => (
@@ -126,8 +122,7 @@ export default function NutritionPage() {
             Three pillars teams actually measure
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            International oncology nutrition societies (for example summaries aligned
-            with{" "}
+            Across major cancer nutrition guidance (for example summaries aligned with{" "}
             <a
               className="font-medium text-[var(--primary)] underline decoration-[var(--primary)]/35 underline-offset-2 hover:decoration-[var(--primary)]"
               href="https://www.espen.org/"
@@ -136,8 +131,8 @@ export default function NutritionPage() {
             >
               ESPEN
             </a>{" "}
-            guidance) repeatedly return to the same themes: protect muscle, protect
-            fluid balance, and protect against foodborne illness when immunity dips.
+            guidance), the same themes appear again and again: protect muscle, keep
+            fluid/electrolyte balance, and reduce food infection risk when immunity is low.
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {nutritionPillars.map((pillar, i) => {
@@ -177,9 +172,8 @@ export default function NutritionPage() {
           Sri Lankan table, global evidence
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-          Familiar foods anchor appetite when everything else feels foreign. The
-          question is never “Is this traditional?” but “Does this portion, texture, and
-          hygiene fit my counts, medications, and symptoms today?”
+          Familiar foods can help people keep eating. What matters most is whether the
+          portion, texture, and hygiene are safe for your symptoms and treatment phase.
         </p>
       </FadeIn>
 

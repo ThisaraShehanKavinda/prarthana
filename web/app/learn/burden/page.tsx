@@ -37,16 +37,12 @@ export default function BurdenPage() {
       <FadeIn>
         <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
           <p className="text-lg leading-relaxed">
-            Cancer is a leading cause of premature death worldwide—not because one
-            disease exploded, but because hundreds of diseases accumulate in aging
-            populations with unequal access to prevention, screening, pathology, and
-            treatment. Public health agencies track{" "}
-            <strong className="text-[var(--foreground)]">incidence</strong> (new
-            diagnoses), <strong className="text-[var(--foreground)]">mortality</strong>{" "}
-            (deaths), and{" "}
-            <strong className="text-[var(--foreground)]">disability-adjusted life years</strong>{" "}
-            to prioritize tobacco control, alcohol policy, vaccination (HPV, hepatitis
-            B), occupational safety, and health system capacity.
+            Cancer is a major global health problem. To understand it clearly, health
+            reports track{" "}
+            <strong className="text-[var(--foreground)]">incidence</strong> (new cases)
+            , <strong className="text-[var(--foreground)]">mortality</strong> (deaths),
+            and other burden measures. These numbers help countries plan prevention,
+            screening, vaccination, and treatment services.
           </p>
           <blockquote className="flex gap-3 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary)]/[0.06] px-4 py-3 text-[var(--foreground)]/95">
             <Quote className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]" aria-hidden />
@@ -65,9 +61,8 @@ export default function BurdenPage() {
             Go deeper: how demographers think about burden
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            Tap a topic to unpack common confusion between incidence, mortality, and
-            individual prognosis—then use the chart and stats panel as teaching props,
-            not as personal predictions.
+            Open each topic for simple explanations of incidence, mortality, and survival.
+            Use this page to learn concepts, not to predict one person's risk.
           </p>
           <Accordion type="single" collapsible className="mt-4 w-full">
             {burdenDeepDive.map((item) => (
@@ -122,9 +117,8 @@ export default function BurdenPage() {
             Headline numbers (illustrative)
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            The pie chart is a simplified slice of global mortality composition—use
-            national registry dashboards when presenting to clinicians or
-            policymakers. Hover the chart segment to read the split.
+            This pie chart is simplified for learning. For formal use, check your
+            country's cancer registry data. Hover segments to see values.
           </p>
           <dl className="mt-6 space-y-3 text-sm">
             <div className="flex justify-between gap-4 border-b border-[var(--border)] py-2">

@@ -11,54 +11,54 @@ export const nutritionWhenEatingIsHard: NutritionAccordionItem[] = [
     id: "nausea",
     title: "Nausea or vomiting",
     body: [
-      "Small, frequent meals often tolerate better than large plates. Cool or room‑temperature foods may smell less intense than hot steam.",
-      "Ginger teas or dry crackers help some people, but evidence is mixed—if anti‑nausea medicines are prescribed, use them on schedule rather than “waiting until it is unbearable.”",
-      "Severe vomiting with signs of dehydration (very dark urine, dizziness, unable to keep fluids down for many hours) needs urgent clinical care.",
+      "Small meals often feel easier than large meals. Cool food may smell less strong than hot food.",
+      "Ginger or crackers can help some people. If your doctor gave anti-nausea medicine, take it as instructed.",
+      "Get urgent care if vomiting is severe or you cannot keep fluids down.",
     ],
   },
   {
     id: "diarrhea",
     title: "Diarrhea",
     body: [
-      "Fluid replacement matters more than “eating perfectly.” Oral rehydration solutions (ORS) or clinician‑approved electrolyte drinks replace salt and potassium better than water alone when losses are high.",
-      "Soluble fiber (oats, banana, well‑cooked rice) can sometimes firm stools; greasy, very spicy, or high‑lactose foods may worsen symptoms for some individuals.",
-      "Persistent diarrhea, blood in stool, fever, or dehydration symptoms should be reported—treatment or supportive medicines may need adjustment.",
+      "Replacing fluid and salts is the first priority. ORS often works better than plain water in heavy diarrhea.",
+      "Simple foods like oats, banana, and soft rice may help. Very oily, spicy, or high-lactose foods may worsen symptoms for some people.",
+      "Tell your team if diarrhea continues, if there is blood, or if fever/dehydration appears.",
     ],
   },
   {
     id: "constipation",
     title: "Constipation",
     body: [
-      "Opioid pain medicines, some anti‑emetics, and low fluid intake commonly slow the gut. Gradual fiber increases plus fluids help when your team says it is safe.",
-      "Gentle movement (short walks) and predictable meal times can support bowel rhythm.",
-      "Sudden severe abdominal pain, vomiting, or no bowel movement for several days despite usual care requires medical review.",
+      "Pain medicines, some anti-nausea drugs, and low fluid intake can cause constipation.",
+      "When safe, more fluids, gradual fiber, and short walks can help bowel movement.",
+      "Call your team for severe pain, vomiting, or several days without stool.",
     ],
   },
   {
     id: "taste",
     title: "Taste changes or metallic mouth",
     body: [
-      "Chemotherapy and radiation can alter taste and smell in ways that feel “not like my food at all.” Marinating proteins, using citrus or tamarind in moderation, or switching utensils to plastic can reduce metallic notes for some people.",
-      "If everything tastes bland, a small amount of salt, herbs, or acid (lemon, lime) may help—unless you are on a sodium‑restricted plan.",
-      "Dental review helps rule out oral infection when taste suddenly worsens.",
+      "Treatment can change taste and smell. Food may taste metallic or bland.",
+      "Marinades, herbs, lemon/lime, or plastic utensils help some people.",
+      "If taste changes suddenly get worse, ask for mouth and dental review.",
     ],
   },
   {
     id: "mucositis",
     title: "Mouth sores (mucositis)",
     body: [
-      "Soft, moist textures (yogurt, thinned porridge, stewed fruit) are often easier than crusty or acidic foods when the lining is fragile.",
-      "Very hot drinks, rough chips, and alcohol‑based mouthwashes can sting; your team may recommend specific rinses or topical treatments.",
-      "Poor oral intake because of pain can spiral quickly—early dietitian input preserves calories and protein.",
+      "Soft and moist foods are usually easier than dry, hard, or acidic foods.",
+      "Avoid very hot drinks and harsh mouthwashes when your mouth is sore.",
+      "Ask early for pain and diet support so you can keep enough calories and protein.",
     ],
   },
   {
     id: "appetite",
     title: "Early fullness or vanishing appetite",
     body: [
-      "Tumor‑related inflammation and therapies can flip appetite hormones; “eating on a clock” with nutrient‑dense snacks sometimes outperforms waiting for hunger.",
-      "Fortifying familiar foods—extra egg, lentils, grated cheese, ground nuts where safe—raises calories without doubling portion size.",
-      "Unintentional weight loss, clothes fitting looser, or weaker grip strength are signals to screen for malnutrition, not personal failure.",
+      "Appetite can drop during treatment, so eating on a schedule may help.",
+      "Add extra energy/protein to regular foods (for example egg, lentils, cheese, or nut powders when safe).",
+      "Unplanned weight loss is a medical warning sign and should be discussed quickly.",
     ],
   },
 ];
@@ -71,28 +71,28 @@ export const nutritionPillars: {
   {
     title: "Protein & lean mass",
     summary:
-      "Muscle is a reservoir during stress. Randomized trials in oncology increasingly care about sarcopenia because it tracks with tolerance of therapy and recovery.",
+      "Muscle strength helps people tolerate treatment and recover.",
     bullets: [
-      "Aim for protein across the day (eggs, fish, pulses, dairy or fortified alternatives) rather than one giant steak.",
-      "Resistance training, when cleared by your team, pairs with protein to preserve strength—not “gym culture,” but practical function (stairs, carrying groceries).",
+      "Try to spread protein through the day (eggs, fish, pulses, dairy, or fortified alternatives).",
+      "If your team agrees, light strength exercise plus protein helps preserve function.",
     ],
   },
   {
     title: "Hydration & electrolytes",
     summary:
-      "Vomiting, diarrhea, fever, or poor intake shift water and salts quickly; kidneys and the heart care about balance as much as volume.",
+      "Vomiting, diarrhea, fever, or low intake can quickly upset fluid and salt balance.",
     bullets: [
-      "Plain water is not always enough when electrolytes are lost—ORS or prescribed electrolyte solutions follow set recipes for a reason.",
-      "Caffeine and alcohol can worsen dehydration; chart fluid goals if your nurse gives a daily target.",
+      "Plain water may not be enough when salts are lost. ORS has a useful balance for this.",
+      "Follow your daily fluid target if your nurse or doctor gives one.",
     ],
   },
   {
     title: "Food safety",
     summary:
-      "Certain treatments (and some blood cancers) suppress immune cells that usually police bacteria in food. Guidance is stricter than for healthy relatives.",
+      "Some treatments lower immunity, so food safety rules may need to be stricter.",
     bullets: [
-      "Avoid unpasteurized dairy, raw or undercooked eggs, meat, or seafood; wash produce under running water; reheat leftovers until steaming hot.",
-      "When in doubt, ask whether neutropenic precautions apply to you—rules differ by regimen and blood counts.",
+      "Avoid unsafe foods like unpasteurized dairy and undercooked eggs/meat/seafood.",
+      "Ask your team if neutropenic food precautions apply to you.",
     ],
   },
 ];

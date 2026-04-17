@@ -14,73 +14,73 @@ export const treatmentModalitiesRich: TreatmentModality[] = [
     icon: Scissors,
     name: "Surgery",
     summary:
-      "The oldest curative modality: remove the tumor with clear margins when anatomy allows, or reduce tumor load to relieve obstruction or bleeding.",
+      "Surgery removes the tumor when possible, or relieves problems like blockage or bleeding.",
     bullets: [
-      "Curative intent when disease is localized and resectable with adequate organ function.",
-      "Staging procedures (e.g., sentinel node biopsy) inform whether chemotherapy or radiation is added.",
-      "Minimally invasive approaches can shorten recovery when tumor biology and location fit.",
+      "Often used to cure cancer when disease is still in one area.",
+      "Extra steps, such as lymph-node checks, help plan whether other treatment is needed.",
+      "Keyhole/minimally invasive surgery may reduce recovery time in suitable cases.",
     ],
     patientNotes: [
-      "Prehabilitation (nutrition, breathing exercises) may be offered before major resections.",
-      "Ask how scars, stomas, or reconstructed anatomy will affect daily life and follow-up imaging schedules.",
+      "Good nutrition and breathing practice before major surgery can help recovery.",
+      "Ask how surgery may affect scars, bowel function, and daily activities.",
     ],
   },
   {
     icon: Zap,
     name: "Radiation therapy",
     summary:
-      "Ionizing radiation creates DNA breaks; dividing cells repair poorly, which is why tumors and some normal tissues (mucosa, marrow) are simultaneously sensitive.",
+      "Radiation damages DNA in cancer cells so they cannot keep growing.",
     bullets: [
-      "External beam photons remain common; electrons treat superficial sites; protons spare depth dose in select pediatric and skull-base cases.",
-      "IMRT/VMAT sculpt dose around organs at risk; SBRT delivers ablative doses in few fractions for small, well-defined tumors.",
-      "Brachytherapy places sources inside or against tumors (cervix, prostate) for steep dose gradients.",
+      "External beam radiation is most common; other types are used in special cases.",
+      "Modern planning helps protect nearby healthy organs.",
+      "Brachytherapy places radiation close to or inside some tumors.",
     ],
     patientNotes: [
-      "Skin care, swallowing strategies, and fatigue management are recurring themes—teams give visit-specific instructions.",
-      "Radiation recall can flare chemotherapy skin toxicity months later; report unusual rashes promptly.",
+      "Skin care, fatigue support, and swallowing advice are common during treatment.",
+      "Report new rashes or unusual symptoms early.",
     ],
   },
   {
     icon: Syringe,
     name: "Systemic chemotherapy",
     summary:
-      "Classic cytotoxics disrupt DNA synthesis, microtubules, or alkylation; they affect any rapidly dividing compartment (marrow, gut epithelium, hair follicles).",
+      "Chemotherapy attacks fast-growing cells, including cancer cells and some healthy cells.",
     bullets: [
-      "Combination regimens exploit non-overlapping toxicities and complementary mechanisms.",
-      "Dose intensity may be modified for kidney/liver function, age, or prior therapy—not ‘weak’ care, but pharmacology-aware care.",
-      "Supportive drugs (anti-emetics, growth factors, antidiarrheals) are part of standard protocols.",
+      "Doctors often combine drugs to improve results.",
+      "Doses may be adjusted for safety based on age, organ function, and side effects.",
+      "Support medicines are a normal part of care.",
     ],
     patientNotes: [
-      "Neuropathy or ‘chemo brain’ can linger; occupational therapy and pacing strategies help some patients.",
-      "Fertility preservation should be discussed before many gonadotoxic regimens when future pregnancy is possible.",
+      "Numbness, tiredness, or concentration problems can happen and should be discussed.",
+      "Ask about fertility options before treatment if future pregnancy matters to you.",
     ],
   },
   {
     icon: Target,
     name: "Targeted therapy",
     summary:
-      "Small molecules or antibodies hit defined drivers (kinases, receptors, antibody-drug conjugate payloads) with narrower off-target toxicity than many cytotoxics—when the target is present.",
+      "Targeted therapy blocks specific molecules that help cancer grow, but only if the target is present.",
     bullets: [
-      "Companion diagnostics (IHC, FISH, NGS) gate access to drugs like HER2, EGFR, ALK, or TRK inhibitors.",
-      "Resistance mutations emerge; repeat biopsies or blood-based assays may be used in advanced disease.",
-      "Skin, liver, blood pressure, or wound-healing effects vary by agent—education is drug-specific.",
+      "Lab tests decide who is likely to benefit from each drug.",
+      "Cancer can change over time, so repeat testing may be needed later.",
+      "Side effects depend on the drug and may include skin, liver, or blood pressure changes.",
     ],
     patientNotes: [
-      "Oral targeted drugs still require adherence, interaction checks, and monitoring labs even without infusion visits.",
+      "Many targeted drugs are tablets, but they still need strict schedules and regular blood tests.",
     ],
   },
   {
     icon: Shield,
     name: "Immunotherapy",
     summary:
-      "Checkpoint inhibitors remove brakes on T cells; cellular therapies engineer immune cells for select hematologic malignancies.",
+      "Immunotherapy helps the immune system find and fight cancer.",
     bullets: [
-      "PD-1/PD-L1 blockade helps subsets of melanoma, lung, bladder, MSI-high tumors, and others—biomarkers guide expectations.",
-      "Immune-related adverse events can mimic infection, endocrine crisis, or colitis—early steroids when indicated improve outcomes.",
-      "CAR-T requires specialized centers for cytokine release and neurotoxicity monitoring.",
+      "It works very well in some cancers, but not in all people.",
+      "Immune side effects can affect bowel, lungs, liver, skin, or hormone glands.",
+      "CAR-T is a specialist treatment done in experienced centers.",
     ],
     patientNotes: [
-      "Hypothyroidism or hyperglycemia months after therapy can be immune-related—routine symptom reporting matters even after finishing doses.",
+      "New symptoms can appear even after treatment ends, so keep follow-up visits.",
     ],
   },
 ];
@@ -94,24 +94,24 @@ export const treatmentCrossCutting: {
     id: "mdt",
     title: "Multidisciplinary teams: who is in the room?",
     body: [
-      "Medical, surgical, and radiation oncologists often review imaging and pathology together with radiologists, pathologists, nurses, and allied health.",
-      "Tumor boards standardize evidence discussion; they do not replace shared decision-making with the individual patient.",
+      "Treatment plans are often discussed by a team: medical, surgical, and radiation doctors, plus radiology, pathology, nursing, and allied staff.",
+      "Team meetings support decisions, but your final plan should still match your own goals and situation.",
     ],
   },
   {
     id: "intent",
     title: "Curative, adjuvant, neoadjuvant, or palliative—intent shapes toxicity tolerance",
     body: [
-      "Neoadjuvant therapy shrinks tumors before surgery; adjuvant therapy mops up micrometastatic risk afterward.",
-      "Palliative radiation or systemic therapy can still be intense when symptoms demand relief—the goal is comfort and function, not eradication.",
+      "Neoadjuvant treatment is given before surgery. Adjuvant treatment is given after surgery.",
+      "Palliative treatment focuses on symptom relief and quality of life, even when cure is not possible.",
     ],
   },
   {
     id: "trials",
     title: "Clinical trials sit alongside standard options",
     body: [
-      "Trials can be Phase I (safety), II (signal), or III (comparison to standard). Eligibility hinges on organ function, prior lines, and measurable disease.",
-      "Ask whether a trial offers extra monitoring or crossover to standard therapy on progression.",
+      "Clinical trials test new options and may be Phase I, II, or III.",
+      "Ask who can join, what extra checks are needed, and what happens if the treatment does not work.",
     ],
   },
 ];
