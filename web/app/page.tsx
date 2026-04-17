@@ -7,6 +7,7 @@ import { FadeIn } from "@/components/motion/fade-in";
 import { getSiteStats } from "@/lib/stats";
 import { ArrowRight, BookOpen, LineChart, Users } from "lucide-react";
 import { SiteBrandLockup } from "@/components/layout/site-brand-lockup";
+import { HomeFaq } from "@/components/home/home-faq";
 
 export default function HomePage() {
   const stats = getSiteStats();
@@ -131,6 +132,22 @@ export default function HomePage() {
               </Card>
             </FadeIn>
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-[var(--border)] bg-[var(--muted)]/20 py-12 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <h2 className="text-balance text-xl font-bold tracking-tight sm:text-2xl">
+              Common questions
+            </h2>
+            <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
+              Quick answers about how to use this site responsibly—tap a question to expand.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.06} className="mt-8">
+            <HomeFaq />
+          </FadeIn>
         </div>
       </section>
     </div>
