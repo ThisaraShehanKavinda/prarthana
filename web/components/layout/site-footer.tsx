@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ClubPartnerLogos } from "@/components/layout/club-partner-logos";
 import { SiteBrandLockup } from "@/components/layout/site-brand-lockup";
-import { SITE_BRAND_LOCKUP_PLAIN } from "@/lib/site-brand";
 
 const learn = [
   { href: "/learn/burden", label: "Global burden" },
@@ -13,8 +12,6 @@ const learn = [
   { href: "/learn/nutrition", label: "Nutrition" },
   { href: "/learn/science", label: "Science hub" },
 ];
-
-const reportSubject = encodeURIComponent(`${SITE_BRAND_LOCKUP_PLAIN} — content report`);
 
 export function SiteFooter() {
   return (
@@ -33,7 +30,7 @@ export function SiteFooter() {
             appear publicly.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-8 min-[420px]:grid-cols-2 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 lg:max-w-xl lg:flex-1">
           <div>
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
               Learn
@@ -71,21 +68,6 @@ export function SiteFooter() {
                 >
                   Create post
                 </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
-              More
-            </p>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  className="text-[var(--foreground)]/80 hover:text-[var(--primary)]"
-                  href={`mailto:hello@example.com?subject=${reportSubject}`}
-                >
-                  Report content
-                </a>
               </li>
             </ul>
           </div>
