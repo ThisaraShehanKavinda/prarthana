@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { auth } from "@/auth";
 import {
@@ -16,6 +17,7 @@ import { CommunityGuidelinesBanner } from "@/components/community/community-guid
 import { COMMUNITY_TOPIC_TAGS } from "@/lib/community-topic-tags";
 import { isEditor } from "@/lib/editors";
 import type { Comment } from "@/lib/types";
+import { FadeIn } from "@/components/motion/fade-in";
 
 export const metadata = {
   title: "Community",
@@ -101,6 +103,48 @@ export default async function CommunityPage({
 
         <CommunityGuidelinesBanner />
         <ContinueLearningBanner />
+
+        <section
+          id="expert-insights"
+          className="mb-6 space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm sm:p-5"
+          aria-labelledby="expert-insights-heading"
+        >
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+              From experienced oncologists
+            </p>
+            <h2
+              id="expert-insights-heading"
+              className="mt-1 text-lg font-bold tracking-tight text-[var(--foreground)]"
+            >
+              Expert Insights
+            </h2>
+          </div>
+          <FadeIn className="space-y-4">
+            <div className="mx-1 sm:mx-2">
+              <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--muted)]">
+                <Image
+                  src="/images/WhatsApp Image 2026-05-08 at 10.02.11.jpeg"
+                  alt="Expert oncologists—insights on cancer care, prevention, and screening"
+                  width={853}
+                  height={1280}
+                  className="block h-auto w-full max-w-full object-contain"
+                  sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) calc(100vw - 4rem), min(48rem, calc(100vw - 5rem))"
+                  priority
+                />
+              </div>
+            </div>
+            <p className="text-sm font-medium text-[var(--muted-foreground)]">
+              Learn from experienced oncologists. Expert-written insights on cancer,
+              prevention, screening, and treatment.
+            </p>
+            <p className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/30 px-4 py-3 text-sm leading-relaxed text-[var(--muted-foreground)]">
+              This page is for education only. It is not medical advice, diagnosis, or
+              treatment. Always follow the guidance of your own oncology team for
+              decisions about your health.
+            </p>
+          </FadeIn>
+        </section>
 
         <div className="mb-4 flex flex-wrap gap-2">
           <Link
