@@ -1,111 +1,92 @@
 import type { LearnTopicIconId } from "@/components/learn/learn-topic-card";
-import { Layers2, Quote } from "lucide-react";
 import { LearnShell } from "@/components/learn/learn-shell";
-import { cancerTypes } from "@/lib/cancer-types";
 import { LearnTopicCard } from "@/components/learn/learn-topic-card";
-import { LearnHoverPanel } from "@/components/learn/learn-hover-panel";
 import { FadeIn } from "@/components/motion/fade-in";
-import { typesTaxonomy } from "@/content/learn-types-hub";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
 
-function iconForTypeSlug(slug: string): LearnTopicIconId {
-  const allowed: LearnTopicIconId[] = [
-    "carcinoma",
-    "sarcoma",
-    "leukemia",
-    "lymphoma",
-    "cns",
-    "childhood",
-  ];
-  return (allowed.includes(slug as LearnTopicIconId)
-    ? slug
-    : "carcinoma") as LearnTopicIconId;
-}
+const sections: {
+  href: string;
+  title: string;
+  desc: string;
+  icon: LearnTopicIconId;
+}[] = [
+  {
+    href: "/learn/burden",
+    title: "Global burden",
+    desc: "Simple charts and clear terms to understand new cases, deaths, and prevention.",
+    icon: "globe2",
+  },
+  {
+    href: "/learn/age",
+    title: "Children & older adults",
+    desc: "How cancer patterns change from childhood to older age, with practical age-based context.",
+    icon: "users",
+  },
+  {
+    href: "/learn/types",
+    title: "Categories of cancer",
+    desc: "Easy guide to cancer families, plus deeper pages for each type.",
+    icon: "layers2",
+  },
+  {
+    href: "/learn/myths",
+    title: "Myths vs facts",
+    desc: "Common cancer myths explained in plain language with trusted source links.",
+    icon: "shieldQuestion",
+  },
+  {
+    href: "/learn/treatments",
+    title: "Treatments",
+    desc: "How surgery, radiation, medicine, and immune therapy are used in real care plans.",
+    icon: "stethoscope",
+  },
+  {
+    href: "/learn/medicines",
+    title: "Medicines (educational)",
+    desc: "A plain-language guide to major cancer medicine groups and key safety concepts.",
+    icon: "pill",
+  },
+  {
+    href: "/learn/nutrition",
+    title: "Nutrition spotlight",
+    desc: "Practical eating tips for treatment days, side effects, hydration, and safety.",
+    icon: "apple",
+  },
+  {
+    href: "/learn/science",
+    title: "Science inside cancer",
+    desc: "Core cancer biology explained simply: DNA changes, staging, hallmarks, and treatment links.",
+    icon: "dna",
+  },
+  {
+    href: "/community#expert-insights",
+    title: "Expert Insights",
+    desc: "Learn from experienced oncologists. Expert-written insights on cancer, prevention, screening, and treatment.",
+    icon: "sparkles",
+  },
+];
 
-export default function TypesIndexPage() {
+export default function LearnIndexPage() {
   return (
     <LearnShell
-      title="Categories of cancer"
-      kicker="Histology, lineage, and how teams talk"
-      crumbs={[
-        { href: "/", label: "Home" },
-        { href: "/learn", label: "Learn" },
-        { href: "/learn/types", label: "Types" },
-      ]}
+      title="Learn hub"
+      kicker="Start anywhere"
+      crumbs={[{ href: "/", label: "Home" }, { href: "/learn", label: "Learn" }]}
     >
       <FadeIn>
-        <div className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-5 text-[var(--muted-foreground)] shadow-sm sm:px-5 sm:py-6">
-          <p className="text-lg leading-relaxed">
-            Doctors group cancers by where they start and what cell type they come from.
-            Even in the same organ, different cancer types can need different treatment.
-            Biopsy and lab tests help identify the exact type before planning care.
-          </p>
-          <blockquote className="flex gap-3 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary)]/[0.06] px-4 py-3 text-[var(--foreground)]/95">
-            <Quote className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]" aria-hidden />
-            <p className="text-sm font-medium leading-relaxed sm:text-base">
-              “Metastatic” describes spread, not the cell type—liver lesions from colon
-              cancer are still colorectal adenocarcinoma under the microscope.
-            </p>
-          </blockquote>
-        </div>
-      </FadeIn>
-
-      <FadeIn delay={0.05}>
-        <LearnHoverPanel className="p-5 sm:p-6">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-[var(--foreground)]">
-            <Layers2 className="h-5 w-5 text-[var(--primary)]" aria-hidden />
-            Taxonomy primer — tap to unpack
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-            Read this primer first to understand lineage, stage, and why the original
-            site of cancer still matters after spread.
-          </p>
-          <Accordion type="single" collapsible className="mt-4 w-full">
-            {typesTaxonomy.map((item) => (
-              <AccordionItem key={item.id} value={item.id}>
-                <AccordionTrigger className="text-left text-[var(--foreground)] hover:no-underline">
-                  <span className="font-semibold">{item.title}</span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-3 text-[var(--muted-foreground)]">
-                    {item.body.map((p, idx) => (
-                      <p key={idx} className="leading-relaxed">
-                        {p}
-                      </p>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </LearnHoverPanel>
-      </FadeIn>
-
-      <Separator className="bg-[var(--border)]" />
-
-      <FadeIn delay={0.08}>
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">
-          Choose a category — each opens a deeper page
-        </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-base">
-          Open any card to read a simple overview, then expand deeper points in each section.
+        <p className="rounded-2xl border border-[var(--border)] bg-[var(--muted)]/25 px-4 py-4 text-lg leading-relaxed text-[var(--muted-foreground)] shadow-sm backdrop-blur-sm">
+          Each module pairs plain-language explanations with charts or visuals. All
+          medical decisions belong with your care team—these pages exist to improve
+          literacy, not to replace clinicians.
         </p>
       </FadeIn>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        {cancerTypes.map((c, i) => (
-          <FadeIn key={c.slug} delay={0.04 * i + 0.1}>
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {sections.map((s, i) => (
+          <FadeIn key={s.href} delay={0.04 * i}>
             <LearnTopicCard
-              href={`/learn/types/${c.slug}`}
-              title={c.title}
-              description={c.short}
-              icon={iconForTypeSlug(c.slug)}
+              href={s.href}
+              title={s.title}
+              description={s.desc}
+              icon={s.icon}
               accentIndex={i}
             />
           </FadeIn>
