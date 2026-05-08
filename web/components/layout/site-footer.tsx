@@ -11,6 +11,7 @@ const learn = [
   { href: "/learn/medicines", label: "Medicines" },
   { href: "/learn/nutrition", label: "Nutrition" },
   { href: "/learn/science", label: "Science hub" },
+  { href: "/community#expert-insights", label: "Expert Insights" },
 ];
 
 export function SiteFooter() {
