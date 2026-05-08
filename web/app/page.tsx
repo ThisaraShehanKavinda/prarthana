@@ -111,7 +111,7 @@ export default function HomePage() {
             {
               title: "Expert Insights",
               body: "Learn from experienced oncologists. Expert-written insights on cancer, prevention, screening, and treatment.",
-              href: "/expert-insights",
+              href: "/community#expert-insights",
               icon: Sparkles,
             },
             {
