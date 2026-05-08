@@ -15,6 +15,7 @@ import {
   Layers2,
   Pill,
   ShieldQuestion,
+  Sparkles,
   Stethoscope,
   Users,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const TOPIC_ICONS = {
   pill: Pill,
   apple: Apple,
   dna: Dna,
+  sparkles: Sparkles,
   carcinoma: Layers2,
   sarcoma: Bone,
   leukemia: Droplets,
