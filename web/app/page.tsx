@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FadeIn } from "@/components/motion/fade-in";
 import { getSiteStats } from "@/lib/stats";
-import { ArrowRight, BookOpen, LineChart, Users } from "lucide-react";
+import { ArrowRight, BookOpen, LineChart, Sparkles, Users } from "lucide-react";
 import { SiteBrandLockup } from "@/components/layout/site-brand-lockup";
 import { HomeFaq } from "@/components/home/home-faq";
 
@@ -87,13 +87,14 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <FadeIn>
-          <h2 className="text-balance text-xl font-bold tracking-tight sm:text-2xl">Three ways to explore</h2>
+          <h2 className="text-balance text-xl font-bold tracking-tight sm:text-2xl">Four ways to explore</h2>
           <p className="mt-2 max-w-2xl text-[var(--muted-foreground)]">
-            Move from population-level context to cellular science, then share
-            lived perspectives—always alongside trusted references.
+            Move from population-level context to cellular science, then clinical
+            expert perspectives, and community stories—always alongside trusted
+            references.
           </p>
         </FadeIn>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
               title: "Guided learning",
@@ -106,6 +107,12 @@ export default function HomePage() {
               body: "DNA damage, hallmarks of cancer, staging, and how therapies work—short modules.",
               href: "/learn/science",
               icon: LineChart,
+            },
+            {
+              title: "Expert Insights",
+              body: "Learn from experienced oncologists. Expert-written insights on cancer, prevention, screening, and treatment.",
+              href: "/expert-insights",
+              icon: Sparkles,
             },
             {
               title: "Community articles",
